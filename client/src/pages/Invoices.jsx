@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import API from "../api/axios";
 import useAuthStore from "../store/authStore";
 import { accents, modes } from "../theme";
+import generateInvoicePDF from "../utils/generatePDF";
 
 const today = new Date().toISOString().split("T")[0];
 
@@ -76,6 +77,7 @@ const Invoices = () => {
     try {
       const res = await API.put(`/invoices/${id}`, { status });
       setInvoices(invoices.map((inv) => inv._id === id ? res.data : inv));
+      setSelectedInvoice(res.data);
     } catch (err) {
       alert("Failed to update status");
     }
@@ -147,6 +149,7 @@ const Invoices = () => {
     cancelBtn: { flex: 1, padding: "10px", borderRadius: 8, border: `1px solid ${m.cardBorder}`, background: "transparent", color: m.textMuted, fontSize: 13, cursor: "pointer" },
     saveBtn: { flex: 1, padding: "10px", borderRadius: 8, border: "none", background: a.color, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer" },
     empty: { textAlign: "center", padding: "60px 20px", color: m.textMuted, fontSize: 14 },
+    downloadBtn: { width: "100%", padding: "9px 12px", borderRadius: 8, border: "none", background: a.color, color: "#fff", fontSize: 12, fontWeight: 600, cursor: "pointer", boxShadow: `0 0 12px ${a.color}60`, marginTop: 8, marginBottom: 4 },
   };
 
   return (
@@ -242,6 +245,13 @@ const Invoices = () => {
                   <div style={{ fontSize: 12, color: m.textMuted }}>{selectedInvoice.notes}</div>
                 </>
               )}
+              <div style={s.divider}></div>
+              <button
+                style={s.downloadBtn}
+                onClick={() => generateInvoicePDF(selectedInvoice)}
+              >
+                ⬇️ Download PDF
+              </button>
               <div style={s.actionBtns}>
                 {["Draft","Sent","Paid","Overdue"].map(status => (
                   <button key={status} style={s.actionBtn(
