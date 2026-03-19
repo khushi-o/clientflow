@@ -14,9 +14,7 @@ const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({
-    name: "", description: "", status: "Active", dueDate: today,
-  });
+  const [form, setForm] = useState({ name: "", description: "", status: "Active", dueDate: today });
 
   const a = accents[accent];
   const m = modes[mode];
@@ -28,7 +26,7 @@ const Projects = () => {
       const res = await API.get("/projects");
       setProjects(res.data);
     } catch (err) {
-      console.error("Fetch error:", err);
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -42,7 +40,6 @@ const Projects = () => {
       setShowModal(false);
       setForm({ name: "", description: "", status: "Active", dueDate: today });
     } catch (err) {
-      console.error("Create error:", err);
       alert(err.response?.data?.message || "Failed to create project");
     }
   };
@@ -62,10 +59,10 @@ const Projects = () => {
     Review:    { background: "rgba(251,191,36,0.12)",  color: "#fbbf24" },
     Completed: { background: "rgba(129,140,248,0.12)", color: "#818cf8" },
     "On Hold": { background: "rgba(248,113,113,0.12)", color: "#f87171" },
-  }[status] || { background: "rgba(52,211,153,0.12)", color: "#34d399" });
+  }[status] || {});
 
   const s = {
-    app: { display: "flex", minHeight: "100vh", background: m.bg, color: m.text, fontFamily: "'DM Sans', sans-serif", transition: "all 0.3s ease" },
+    app: { display: "flex", minHeight: "100vh", background: m.bg, color: m.text, fontFamily: "'DM Sans', sans-serif" },
     sidebar: { width: 220, background: m.sidebar, display: "flex", flexDirection: "column", padding: "24px 0", borderRight: `1px solid ${m.cardBorder}`, flexShrink: 0 },
     logo: { fontFamily: "'Syne', sans-serif", fontSize: 18, fontWeight: 700, padding: "0 20px 32px", letterSpacing: "-0.3px" },
     navLabel: { fontSize: 9, color: m.textMuted, letterSpacing: "1.5px", textTransform: "uppercase", padding: "0 12px 6px 20px" },
@@ -76,7 +73,7 @@ const Projects = () => {
     pageTitle: { fontFamily: "'Syne', sans-serif", fontSize: 17, fontWeight: 700, color: m.text },
     addBtn: { padding: "8px 18px", borderRadius: 8, border: "none", background: a.color, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", boxShadow: `0 0 14px ${a.color}60` },
     content: { padding: "24px 28px", flex: 1 },
-    grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 },
+    grid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 },
     card: { background: m.card, borderRadius: 14, border: `1px solid ${m.cardBorder}`, padding: 20, boxShadow: m.shadow, position: "relative", overflow: "hidden" },
     cardAccent: { position: "absolute", top: 0, left: 0, right: 0, height: 2, background: a.color, opacity: 0.6 },
     cardHeader: { display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 },
@@ -89,11 +86,11 @@ const Projects = () => {
     barFill: (pct) => ({ height: "100%", borderRadius: 2, width: `${pct}%`, background: `linear-gradient(90deg, ${a.color}, ${a.color}99)`, boxShadow: `0 0 6px ${a.color}60` }),
     empty: { textAlign: "center", padding: "60px 20px", color: m.textMuted, fontSize: 14 },
     logoutBtn: { margin: "auto 10px 0", padding: "9px 12px", borderRadius: 8, fontSize: 13, color: "#f87171", cursor: "pointer", display: "flex", alignItems: "center", gap: 10 },
-    overlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 },
-    modal: { background: m.sidebar, borderRadius: 16, border: `1px solid ${m.cardBorder}`, padding: 28, width: "100%", maxWidth: 440, boxShadow: "0 20px 60px rgba(0,0,0,0.5)" },
+    overlay: { position: "fixed", inset: 0, background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 20 },
+    modal: { background: m.card, borderRadius: 16, border: `1px solid ${m.cardBorder}`, padding: 28, width: "90%", maxWidth: 440, boxShadow: "0 20px 60px rgba(0,0,0,0.5)", boxSizing: "border-box" },
     modalTitle: { fontFamily: "'Syne', sans-serif", fontSize: 18, fontWeight: 700, color: m.text, marginBottom: 20 },
-    input: { width: "100%", padding: "10px 14px", borderRadius: 8, border: `1px solid ${m.cardBorder}`, background: m.bg, color: m.text, fontSize: 13, marginBottom: 12, outline: "none", fontFamily: "'DM Sans', sans-serif", colorScheme: mode === "light" ? "light" : "dark" },
-    select: { width: "100%", padding: "10px 14px", borderRadius: 8, border: `1px solid ${m.cardBorder}`, background: m.bg, color: m.text, fontSize: 13, marginBottom: 12, outline: "none", fontFamily: "'DM Sans', sans-serif" },
+    input: { width: "100%", padding: "10px 14px", borderRadius: 8, border: `1px solid ${m.cardBorder}`, background: m.bg, color: m.text, fontSize: 13, marginBottom: 10, outline: "none", fontFamily: "'DM Sans', sans-serif", boxSizing: "border-box", minWidth: 0, colorScheme: mode === "light" ? "light" : "dark" },
+    select: { width: "100%", padding: "10px 14px", borderRadius: 8, border: `1px solid ${m.cardBorder}`, background: m.bg, color: m.text, fontSize: 13, marginBottom: 10, outline: "none", fontFamily: "'DM Sans', sans-serif", boxSizing: "border-box", minWidth: 0 },
     modalBtns: { display: "flex", gap: 10, marginTop: 8 },
     cancelBtn: { flex: 1, padding: "10px", borderRadius: 8, border: `1px solid ${m.cardBorder}`, background: "transparent", color: m.textMuted, fontSize: 13, cursor: "pointer" },
     saveBtn: { flex: 1, padding: "10px", borderRadius: 8, border: "none", background: a.color, color: "#fff", fontSize: 13, fontWeight: 600, cursor: "pointer", boxShadow: `0 0 14px ${a.color}60` },
@@ -113,9 +110,7 @@ const Projects = () => {
             {icon} {label}
           </div>
         ))}
-        <div style={s.logoutBtn} onClick={() => { logout(); navigate("/login"); }}>
-          🚪 Logout
-        </div>
+        <div style={s.logoutBtn} onClick={() => { logout(); navigate("/login"); }}>🚪 Logout</div>
       </div>
 
       <div style={s.main}>

@@ -4,6 +4,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
 import Invoices from "./pages/Invoices";
+import Clients from "./pages/Clients";
 import useAuthStore from "./store/authStore";
 
 const ProtectedRoute = ({ children }) => {
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="/dashboard" element={<ProtectedRoute><Dashboard /> </ProtectedRoute>}/>
         <Route path="/projects" element={<ProtectedRoute><Projects /></ProtectedRoute>} />
         <Route path="/invoices" element={<ProtectedRoute><Invoices /></ProtectedRoute>} />
+        <Route path="/clients" element={<ProtectedRoute><Clients /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );
