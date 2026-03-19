@@ -3,6 +3,8 @@ import { create } from "zustand";
 const useAuthStore = create((set) => ({
   user: JSON.parse(localStorage.getItem("user")) || null,
   token: localStorage.getItem("token") || null,
+  accent: localStorage.getItem("accent") || "violet",
+  mode: localStorage.getItem("mode") || "night",
 
   login: (userData) => {
     localStorage.setItem("user", JSON.stringify(userData));
@@ -14,6 +16,16 @@ const useAuthStore = create((set) => ({
     localStorage.removeItem("user");
     localStorage.removeItem("token");
     set({ user: null, token: null });
+  },
+
+  setAccent: (accent) => {
+    localStorage.setItem("accent", accent);
+    set({ accent });
+  },
+
+  setMode: (mode) => {
+    localStorage.setItem("mode", mode);
+    set({ mode });
   },
 }));
 

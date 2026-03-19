@@ -6,7 +6,9 @@ import { accents, modes } from "../theme";
 
 const today = new Date().toISOString().split("T")[0];
 
-const Projects = ({ accent = "violet", mode = "night" }) => {
+const Projects = () => {
+  const accent = useAuthStore((state) => state.accent);
+  const mode = useAuthStore((state) => state.mode);
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);

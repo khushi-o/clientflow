@@ -7,8 +7,10 @@ const Dashboard = () => {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const navigate = useNavigate();
-  const [accent, setAccent] = useState("violet");
-  const [mode, setMode] = useState("night");
+  const accent = useAuthStore((state) => state.accent);
+  const mode = useAuthStore((state) => state.mode);
+  const setAccent = useAuthStore((state) => state.setAccent);
+  const setMode = useAuthStore((state) => state.setMode);
 
   const a = accents[accent];
   const m = modes[mode];
