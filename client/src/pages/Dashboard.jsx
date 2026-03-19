@@ -100,7 +100,7 @@ const Dashboard = () => {
           <span style={{ color: a.color }}>Flow</span>
         </div>
         <div style={s.navLabel}>Menu</div>
-        {[["Dashboard","🏠","/dashboard"],["Projects","📁","/projects"],["Clients","👥","/clients"],["Invoices","📄","/invoices"],["Messages","💬","/messages"]].map(([label, icon, path], i) => (
+        {[["Dashboard","🏠","/dashboard"],["Projects","📁","/projects"],["Clients","👥","/clients"],["Invoices","📄","/invoices"],["Messages","💬","/messages"],["Files","📎","/files"]].map(([label, icon, path], i) => (
           <div key={label} style={s.navItem(i === 0)} onClick={() => navigate(path)}>
             <div style={s.navDot(i === 0)}></div>
             {icon} {label}
@@ -175,6 +175,7 @@ const Dashboard = () => {
                 { label: "👤 Add Client",  path: "/clients",  color: a.color },
                 { label: "📄 New Invoice", path: "/invoices", color: a.color },
                 { label: "💬 Messages",   path: "/messages", color: a.color },
+                { label: "📎 Files", path: "/files", color: a.color },
               ].map((action) => (
                 <div
                   key={action.label}

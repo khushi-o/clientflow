@@ -104,7 +104,7 @@ const Projects = () => {
           <span style={{ color: a.color }}>Flow</span>
         </div>
         <div style={s.navLabel}>Menu</div>
-        {[["Dashboard","🏠","/dashboard"],["Projects","📁","/projects"],["Clients","👥","/clients"],["Invoices","📄","/invoices"],["Messages","💬","/messages"]].map(([label, icon, path]) => (
+        {[["Dashboard","🏠","/dashboard"],["Projects","📁","/projects"],["Clients","👥","/clients"],["Invoices","📄","/invoices"],["Messages","💬","/messages"],["Files","📎","/files"]].map(([label, icon, path]) => (
           <div key={label} style={s.navItem(label === "Projects")} onClick={() => navigate(path)}>
             <div style={s.navDot(label === "Projects")}></div>
             {icon} {label}
