@@ -1,18 +1,21 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import API from "../api/axios";
 import useAuthStore from "../store/authStore";
 import { accents, modes } from "../theme";
 import Layout from "../components/Layout";
 import PageHeader from "../components/PageHeader";
 import EmptyState from "../components/EmptyState";
+import { SingleDatePicker } from "../components/SingleDatePicker.jsx";
+import { pushRecent } from "../utils/recentItems";
 
 const today = new Date().toISOString().split("T")[0];
 
 const Projects = () => {
   const accent = useAuthStore((s) => s.accent);
   const mode   = useAuthStore((s) => s.mode);
-  const navigate = useNavigate();
+  const user   = useAuthStore((s) => s.user);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [projects, setProjects]   = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [loading, setLoading]     = useState(true);
@@ -22,6 +25,19 @@ const Projects = () => {
   const m = modes[mode];
 
   useEffect(() => { fetchProjects(); }, []);
+
+  const highlightId = searchParams.get("projectId");
+
+  useEffect(() => {
+    const id = searchParams.get("projectId");
+    if (!id || !projects.length) return;
+    requestAnimationFrame(() => {
+      document.getElementById(`project-${id}`)?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    });
+  }, [searchParams, projects]);
 
   const fetchProjects = async () => {
     try {
@@ -51,7 +67,7 @@ const Projects = () => {
     try {
       await API.delete(`/projects/${id}`);
       setProjects(projects.filter((p) => p._id !== id));
-    } catch (err) {
+    } catch {
       alert("Failed to delete project");
     }
   };
@@ -178,7 +194,7 @@ const Projects = () => {
           <EmptyState icon="⏳" title="Loading projects..." subtitle="" />
         ) : projects.length === 0 ? (
           <EmptyState
-            icon="📁" title="No projects yet"
+            icon="🗂️" title="No projects yet"
             subtitle="Create your first project and start managing your work"
             action="+ New Project"
             onAction={() => setShowModal(true)}
@@ -187,7 +203,27 @@ const Projects = () => {
           <div style={s.grid}>
             {projects.map((p) => (
               <div
-                key={p._id} style={s.card}
+                key={p._id}
+                id={`project-${p._id}`}
+                style={{
+                  ...s.card,
+                  borderColor:
+                    highlightId === p._id ? `${a.color}80` : m.cardBorder,
+                  boxShadow:
+                    highlightId === p._id
+                      ? `0 0 0 2px ${a.color}40`
+                      : m.shadow,
+                }}
+                onClick={() => {
+                  setSearchParams({ projectId: p._id });
+                  pushRecent(user?._id, {
+                    type: "project",
+                    id: p._id,
+                    title: p.name,
+                    subtitle: p.status,
+                    path: `/projects?projectId=${p._id}`,
+                  });
+                }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "translateY(-4px)";
                   e.currentTarget.style.boxShadow = `0 12px 32px ${a.color}20`;
@@ -195,8 +231,12 @@ const Projects = () => {
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = m.shadow;
-                  e.currentTarget.style.borderColor = m.cardBorder;
+                  e.currentTarget.style.boxShadow =
+                    highlightId === p._id
+                      ? `0 0 0 2px ${a.color}40`
+                      : m.shadow;
+                  e.currentTarget.style.borderColor =
+                    highlightId === p._id ? `${a.color}80` : m.cardBorder;
                 }}
               >
                 <div style={s.cardAccent}></div>
@@ -220,7 +260,10 @@ const Projects = () => {
                   </div>
                   <button
                     style={s.deleteBtn}
-                    onClick={() => handleDelete(p._id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(p._id);
+                    }}
                     onMouseEnter={(e) => e.currentTarget.style.background = "rgba(248,113,113,0.1)"}
                     onMouseLeave={(e) => e.currentTarget.style.background = "none"}
                   >
@@ -257,10 +300,13 @@ const Projects = () => {
               <option value="Completed">Completed</option>
               <option value="On Hold">On Hold</option>
             </select>
-            <input
-              style={s.input} type="date"
+            <SingleDatePicker
               value={form.dueDate}
-              onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
+              onChange={(dueDate) => setForm({ ...form, dueDate })}
+              accent={a}
+              surface={m}
+              label="Due date"
+              zIndex={200}
             />
             <div style={s.modalBtns}>
               <button style={s.cancelBtn} onClick={() => setShowModal(false)}>Cancel</button>

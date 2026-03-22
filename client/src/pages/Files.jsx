@@ -50,7 +50,7 @@ const Files = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setFiles([res.data, ...files]);
-    } catch (err) {
+    } catch {
       alert("Failed to upload file");
     } finally {
       setUploading(false);
@@ -63,11 +63,26 @@ const Files = () => {
     try {
       await API.delete(`/files/${fileId}`);
       setFiles(files.filter((f) => f._id !== fileId));
-    } catch (err) { alert("Failed to delete file"); }
+    } catch {
+      alert("Failed to delete file");
+    }
   };
 
-  const handleDownload = (fileId) => {
-    window.open(`http://localhost:5000/api/files/download/${fileId}`, "_blank");
+  const handleDownload = async (fileId) => {
+    const meta = files.find((f) => f._id === fileId);
+    try {
+      const res = await API.get(`/files/download/${fileId}`, {
+        responseType: "blob",
+      });
+      const url = URL.createObjectURL(res.data);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = meta?.originalName || "download";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert("Download failed — try signing in again or check your connection.");
+    }
   };
 
   const formatSize = (bytes) => {
@@ -210,7 +225,7 @@ const Files = () => {
         <div style={s.fileArea}>
           {!selectedProject ? (
             <EmptyState
-              icon="📎"
+              icon="🗃️"
               title="Select a project"
               subtitle="Choose a project from the left to view and upload files"
             />

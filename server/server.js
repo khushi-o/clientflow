@@ -4,18 +4,21 @@ const dotenv = require("dotenv");
 const http = require("http");
 const { Server } = require("socket.io");
 const connectDB = require("./config/db.js");
+const { getCorsOrigins } = require("./config/cors.config.js");
 const path = require("path");
 
 dotenv.config();
 connectDB();
 
+const corsOrigins = getCorsOrigins();
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "http://localhost:5173", methods: ["GET", "POST"] },
+  cors: { origin: corsOrigins, methods: ["GET", "POST"] },
 });
 
-app.use(cors());
+app.use(cors({ origin: corsOrigins }));
 app.use(express.json());
 
 // Routes
@@ -26,6 +29,7 @@ app.use("/api/clients", require("./routes/client.routes"));
 app.use("/api/messages", require("./routes/message.routes"));
 app.use("/api/files", require("./routes/file.routes"));
 app.use("/api/notifications", require("./routes/notification.routes"));
+app.use("/api/search", require("./routes/search.routes"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Socket.io

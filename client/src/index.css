@@ -1,0 +1,173 @@
+/* Height chain + safe areas for mobile / notched devices */
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+#root {
+  min-height: 100%;
+  min-height: 100dvh;
+}
+
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 900px) {
+  .dashboard-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Date range popover: caption inherits theme text; accent comes from DayPicker inline CSS vars */
+.cf-daterange-popover .rdp-root.cf-daypicker {
+  color: inherit;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.cf-daterange-popover .rdp-months {
+  max-width: 100%;
+  width: 100%;
+  min-width: 0;
+}
+
+.cf-daterange-popover .rdp-month {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Month caption hidden — month/year selects live in the left panel */
+.cf-daterange-popover .cf-daterange-hidden-caption {
+  min-height: var(--rdp-nav-height);
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+.cf-daterange-popover .rdp-month_caption {
+  font-size: 1rem;
+  font-weight: 600;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding-bottom: 4px;
+}
+
+.cf-daterange-popover .rdp-selected {
+  font-size: 1rem;
+}
+
+.cf-daterange-split-inner {
+  min-width: 0;
+}
+
+/* Two-pane date range popover */
+.cf-daterange-beak {
+  position: absolute;
+  top: -8px;
+  right: 28px;
+  width: 0;
+  height: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+@media (max-width: 640px) {
+  .cf-daterange-split-inner {
+    flex-direction: column !important;
+    min-height: auto !important;
+  }
+
+  .cf-daterange-panel-left {
+    flex-basis: auto !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px 14px 0 0 !important;
+  }
+
+  .cf-daterange-panel-right {
+    flex-basis: auto !important;
+    padding-bottom: 18px !important;
+  }
+}
+
+/* ThemeSelect: list rows use accent (not OS blue) for hover / selection */
+.cf-theme-select-option {
+  color: var(--cf-ts-text);
+  font-weight: 500;
+}
+
+.cf-theme-select-option[data-selected="true"] {
+  background: color-mix(in srgb, var(--cf-ts-accent) 18%, transparent);
+  color: var(--cf-ts-accent);
+  font-weight: 600;
+}
+
+.cf-theme-select-option:hover {
+  background: color-mix(in srgb, var(--cf-ts-accent) 22%, transparent);
+  color: var(--cf-ts-accent);
+}
+
+.cf-theme-select-option[data-selected="true"]:hover {
+  background: color-mix(in srgb, var(--cf-ts-accent) 28%, transparent);
+}
+
+.cf-theme-select-trigger:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--cf-ts-accent) 40%, transparent);
+}
+
+.cf-daterange-panel-right .rdp-month_caption {
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Compact single-date popover (Projects / Invoices): custom caption = two ThemeSelects */
+.cf-single-date-popover.cf-daterange-popover {
+  max-width: min(100vw - 24px, 320px);
+}
+
+/* Caption row sits centered between < >; month + year are a compact pair (not full-width / left-heavy) */
+.cf-single-date-daypicker .rdp-month_caption {
+  justify-content: center !important;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline: 2px;
+}
+
+.cf-single-date-caption {
+  justify-content: center !important;
+  gap: 10px;
+  max-width: 100%;
+}
+
+/* Fixed compact widths so both controls stay between chevrons */
+.cf-single-date-caption-month {
+  flex: 0 0 auto;
+  width: 88px;
+  max-width: 88px;
+  min-width: 0;
+}
+
+.cf-single-date-caption-year {
+  flex: 0 0 auto;
+  width: 68px;
+  max-width: 68px;
+  min-width: 0;
+}
+

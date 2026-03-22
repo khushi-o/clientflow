@@ -1,6 +1,6 @@
 import jsPDF from "jspdf";
 
-const generateInvoicePDF = (invoice, accentColor = "#818cf8") => {
+const generateInvoicePDF = (invoice) => {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
 

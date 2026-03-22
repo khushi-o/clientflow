@@ -1,10 +1,8 @@
 import useAuthStore from "../store/authStore";
-import { accents, modes } from "../theme";
+import { modes } from "../theme";
 
 const PageHeader = ({ title, children }) => {
-  const accent = useAuthStore((s) => s.accent);
   const mode = useAuthStore((s) => s.mode);
-  const a = accents[accent];
   const m = modes[mode];
 
   return (

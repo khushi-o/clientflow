@@ -62,8 +62,8 @@ const Notifications = () => {
   };
 
   const typeIcon = (type) => ({
-    message: "💬", invoice: "📄",
-    project: "📁", file: "📎", general: "🔔",
+    message: "📨", invoice: "🧾",
+    project: "🗂️", file: "🗃️", general: "📬",
   }[type] || "🔔");
 
   const typeColor = (type) => ({
@@ -185,7 +185,7 @@ const Notifications = () => {
           <EmptyState icon="⏳" title="Loading..." subtitle="" />
         ) : notifications.length === 0 ? (
           <EmptyState
-            icon="🔔"
+            icon="📬"
             title="No notifications yet"
             subtitle="You'll see notifications here when there's activity on your projects"
           />

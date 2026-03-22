@@ -1,64 +1,103 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion as Motion } from "framer-motion";
 import API from "../api/axios";
 import useAuthStore from "../store/authStore";
 import { accents, modes } from "../theme";
+import ThemePicker from "../components/ThemePicker.jsx";
 import Layout from "../components/Layout";
 import PageHeader from "../components/PageHeader";
 import StatCard from "../components/StatCard";
 import EmptyState from "../components/EmptyState";
+import DashboardCharts from "../components/DashboardCharts.jsx";
+import DateRangeFilter from "../components/DateRangeFilter.jsx";
+import { getRecent } from "../utils/recentItems";
+
+const defaultDateRange = () => {
+  const to = new Date();
+  const from = new Date();
+  from.setDate(from.getDate() - 29);
+  return {
+    from: from.toISOString().slice(0, 10),
+    to: to.toISOString().slice(0, 10),
+  };
+};
+
+const greetingLine = (name) => {
+  const h = new Date().getHours();
+  const g = h < 12 ? "Good morning" : h < 17 ? "Good afternoon" : "Good evening";
+  return `${g}, ${name || "there"}`;
+};
+
+const statList = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.04 },
+  },
+};
+const statItem = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.22, 1, 0.36, 1] } },
+};
+const panelIn = {
+  hidden: { opacity: 0, y: 14 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+  },
+};
 
 const Dashboard = () => {
   const user      = useAuthStore((s) => s.user);
   const accent    = useAuthStore((s) => s.accent);
   const mode      = useAuthStore((s) => s.mode);
-  const setAccent = useAuthStore((s) => s.setAccent);
-  const setMode   = useAuthStore((s) => s.setMode);
   const navigate  = useNavigate();
   const [stats, setStats]     = useState(null);
   const [loading, setLoading] = useState(true);
+  const [recent, setRecent]   = useState([]);
+  const [dateFrom, setDateFrom] = useState(() => defaultDateRange().from);
+  const [dateTo, setDateTo]     = useState(() => defaultDateRange().to);
 
   const a = accents[accent] || accents["earthy"];
   const m = modes[mode]     || modes["earthy"];
 
-  useEffect(() => { fetchStats(); }, []);
-
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
+    setLoading(true);
     try {
-      const res = await API.get("/auth/stats");
+      const res = await API.get("/auth/stats", {
+        params: { from: dateFrom, to: dateTo },
+      });
       setStats(res.data);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [dateFrom, dateTo]);
+
+  useEffect(() => {
+    fetchStats();
+  }, [fetchStats]);
+
+  useEffect(() => {
+    if (!user?._id) return;
+    setRecent(getRecent(user._id));
+    const onFocus = () => setRecent(getRecent(user._id));
+    window.addEventListener("focus", onFocus);
+    return () => window.removeEventListener("focus", onFocus);
+  }, [user?._id]);
 
   const statusColor = (status) => ({
     Active:    { background: "rgba(52,211,153,0.12)",  color: "#34d399" },
     Review:    { background: "rgba(251,191,36,0.12)",  color: "#fbbf24" },
-    Completed: { background: "rgba(129,140,248,0.12)", color: "#818cf8" },
+    Completed: { background: "rgba(45,212,191,0.14)", color: "#14b8a6" },
     "On Hold": { background: "rgba(248,113,113,0.12)", color: "#f87171" },
   }[status] || {});
 
-  const THEMES = [
-    { key: "earthy", accentKey: "earthy", label: "Earthy", dot: "#1B4332" },
-    { key: "dark",   accentKey: "cyber",  label: "Cyber",  dot: "#B794F4" },
-    { key: "night",  accentKey: "sunset", label: "Sunset", dot: "#6B46C1" },
-    { key: "light",  accentKey: "violet", label: "Light",  dot: "#818cf8" },
-  ];
-
   const s = {
     controls: { display: "flex", alignItems: "center", gap: 8 },
-    modeBtn: (active) => ({
-      padding: "5px 14px", borderRadius: 20, fontSize: 11,
-      fontWeight: 500, cursor: "pointer",
-      border: `1px solid ${active ? a.color : m.cardBorder}`,
-      background: active ? a.color : m.card,
-      color: active ? "#fff" : m.textMuted,
-      transition: "all 0.2s",
-      display: "flex", alignItems: "center", gap: 6,
-    }),
     avatar: {
       width: 32, height: 32, borderRadius: "50%",
       background: a.color, display: "flex", alignItems: "center",
@@ -67,11 +106,11 @@ const Dashboard = () => {
       marginLeft: 4,
     },
     content: { padding: "24px 28px", flex: 1 },
-    statsGrid: {
-      display: "grid", gridTemplateColumns: "repeat(4,1fr)",
-      gap: 14, marginBottom: 24,
+    row: {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+      gap: 14,
     },
-    row: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 },
     card: {
       background: m.card, borderRadius: 14,
       border: `1px solid ${m.cardBorder}`,
@@ -113,66 +152,113 @@ const Dashboard = () => {
       transition: "all 0.2s", background: m.bg,
     },
     arrow: { color: a.color, fontSize: 16, transition: "transform 0.2s" },
+    recentRow: {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 8,
+    },
+    recentChip: {
+      padding: "8px 12px",
+      borderRadius: 8,
+      border: `1px solid ${m.cardBorder}`,
+      fontSize: 12,
+      color: m.text,
+      cursor: "pointer",
+      background: m.bg,
+      transition: "all 0.2s",
+    },
   };
 
   const statCards = stats ? [
-    { label: "Projects",         value: stats.projects,        sub: "total",              icon: "📁" },
-    { label: "Clients",          value: stats.clients,         sub: "total",              icon: "👥" },
-    { label: "Pending Invoices", value: stats.pendingInvoices, sub: "unpaid",             icon: "📄" },
-    { label: "Revenue",          value: `₹${stats.totalRevenue.toLocaleString()}`, sub: "from paid invoices", icon: "💰" },
+    { label: "Projects", value: stats.projects, sub: "", icon: "🗂️", to: "/projects" },
+    { label: "Clients", value: stats.clients, sub: "", icon: "🤝", to: "/clients" },
+    { label: "Pending Invoices", value: stats.pendingInvoices, sub: "", icon: "🧾", to: "/invoices" },
+    {
+      label: "Revenue",
+      value: `₹${stats.totalRevenue.toLocaleString()}`,
+      sub: "",
+      icon: "💰",
+      to: "/invoices",
+    },
   ] : [
-    { label: "Projects",         value: "—", sub: "loading", icon: "📁" },
-    { label: "Clients",          value: "—", sub: "loading", icon: "👥" },
-    { label: "Pending Invoices", value: "—", sub: "loading", icon: "📄" },
-    { label: "Revenue",          value: "—", sub: "loading", icon: "💰" },
+    { label: "Projects", value: "—", sub: "", icon: "🗂️" },
+    { label: "Clients", value: "—", sub: "", icon: "🤝" },
+    { label: "Pending Invoices", value: "—", sub: "", icon: "🧾" },
+    { label: "Revenue", value: "—", sub: "", icon: "💰" },
   ];
 
   const quickActions = [
     { label: "➕ New Project", path: "/projects" },
-    { label: "👤 Add Client",  path: "/clients"  },
-    { label: "📄 New Invoice", path: "/invoices" },
-    { label: "💬 Messages",    path: "/messages" },
-    { label: "📎 Files",       path: "/files"    },
+    { label: "🤝 Add Client",  path: "/clients"  },
+    { label: "🧾 New Invoice", path: "/invoices" },
+    { label: "📨 Messages",    path: "/messages" },
+    { label: "🗃️ Files",       path: "/files"    },
   ];
 
   return (
     <Layout>
-      <PageHeader title={`Good morning, ${user?.name} 👋`}>
+      <PageHeader title={`${greetingLine(user?.name)} 👋`}>
         <div style={s.controls}>
-          {THEMES.map(({ key, accentKey, label, dot }) => (
-            <button
-              key={key}
-              title={label}
-              style={s.modeBtn(mode === key)}
-              onClick={() => { setMode(key); setAccent(accentKey); }}
-            >
-              <div style={{
-                width: 8, height: 8, borderRadius: "50%",
-                background: dot, flexShrink: 0,
-                boxShadow: mode === key ? `0 0 6px ${dot}` : "none",
-              }} />
-              {label}
-            </button>
-          ))}
-          <div style={s.avatar}>{user?.name?.[0]?.toUpperCase()}</div>
+          <ThemePicker variant="header" />
+          <Motion.div
+            style={s.avatar}
+            whileHover={{ scale: 1.06 }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 400, damping: 28 }}
+          >
+            {user?.name?.[0]?.toUpperCase()}
+          </Motion.div>
         </div>
       </PageHeader>
 
       <div style={s.content}>
-        <div style={s.statsGrid}>
-          {statCards.map((st) => (
-            <StatCard key={st.label} {...st} />
-          ))}
-        </div>
+        <DateRangeFilter
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          accent={a}
+          surface={m}
+          onChange={({ from, to }) => {
+            setDateFrom(from);
+            setDateTo(to);
+          }}
+        />
+
+        <Motion.div
+          className="dashboard-stats-grid"
+          style={{ marginBottom: 24 }}
+          variants={statList}
+          initial="hidden"
+          animate="show"
+        >
+          {statCards.map((st) => {
+            const { to, ...card } = st;
+            return (
+              <Motion.div key={st.label} variants={statItem} style={{ height: "100%" }}>
+                <StatCard
+                  {...card}
+                  onClick={to ? () => navigate(to) : undefined}
+                />
+              </Motion.div>
+            );
+          })}
+        </Motion.div>
+
+        <DashboardCharts
+          revenueSeries={stats?.revenueSeries}
+          invoiceStatusMix={stats?.invoiceStatusMix}
+          m={m}
+          a={a}
+          loading={loading}
+        />
 
         <div style={s.row}>
-          <div style={s.card}>
+          <Motion.div style={s.card} variants={panelIn} initial="hidden" animate="show">
             <div style={s.cardTitle}>Recent Projects</div>
             {loading ? (
               <EmptyState icon="⏳" title="Loading..." subtitle="" />
             ) : !stats?.recentProjects?.length ? (
               <EmptyState
-                icon="📁"
+                icon="🗂️"
                 title="No projects yet"
                 subtitle="Create your first project to get started"
                 action="Create Project"
@@ -180,16 +266,18 @@ const Dashboard = () => {
               />
             ) : (
               stats.recentProjects.map((p) => (
-                <div
-                  key={p._id} style={s.pItem}
+                <Motion.div
+                  key={p._id}
+                  style={s.pItem}
                   onClick={() => navigate("/projects")}
+                  whileHover={{ x: 5 }}
+                  whileTap={{ scale: 0.995 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 32 }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = `${a.color}40`;
-                    e.currentTarget.style.transform = "translateX(4px)";
+                    e.currentTarget.style.borderColor = `${a.color}45`;
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = m.cardBorder;
-                    e.currentTarget.style.transform = "translateX(0)";
                   }}
                 >
                   <div style={s.pTop}>
@@ -205,35 +293,85 @@ const Dashboard = () => {
                   <div style={s.barBg}>
                     <div style={s.barFill(p.progress)}></div>
                   </div>
-                </div>
+                </Motion.div>
               ))
             )}
-          </div>
+          </Motion.div>
 
-          <div style={s.card}>
+          <Motion.div style={s.card} variants={panelIn} initial="hidden" animate="show" transition={{ delay: 0.06 }}>
             <div style={s.cardTitle}>Quick Actions</div>
             {quickActions.map((action) => (
-              <div
+              <Motion.div
                 key={action.label}
+                role="button"
+                tabIndex={0}
                 style={s.actionItem}
                 onClick={() => navigate(action.path)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    navigate(action.path);
+                  }
+                }}
+                whileHover={{ x: 5 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 420, damping: 30 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = `${a.color}40`;
+                  e.currentTarget.style.borderColor = `${a.color}45`;
                   e.currentTarget.style.background = a.glow;
-                  e.currentTarget.querySelector(".arrow").style.transform = "translateX(4px)";
+                  const ar = e.currentTarget.querySelector(".arrow");
+                  if (ar) ar.style.transform = "translateX(6px)";
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = m.cardBorder;
                   e.currentTarget.style.background = m.bg;
-                  e.currentTarget.querySelector(".arrow").style.transform = "translateX(0)";
+                  const ar = e.currentTarget.querySelector(".arrow");
+                  if (ar) ar.style.transform = "translateX(0)";
                 }}
               >
                 {action.label}
                 <span className="arrow" style={s.arrow}>→</span>
-              </div>
+              </Motion.div>
             ))}
-          </div>
+          </Motion.div>
         </div>
+
+        <Motion.div style={{ ...s.card, marginTop: 14 }} variants={panelIn} initial="hidden" animate="show" transition={{ delay: 0.1 }}>
+          <div style={s.cardTitle}>Recently viewed</div>
+          {recent.length === 0 ? (
+            <div style={{ fontSize: 12, color: m.textMuted }}>
+              Open a client, project, or invoice — it will show up here for quick access.
+            </div>
+          ) : (
+            <div style={s.recentRow}>
+              {recent.map((r) => (
+                <button
+                  key={`${r.type}-${r.id}`}
+                  type="button"
+                  style={s.recentChip}
+                  onClick={() => navigate(r.path)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = `${a.color}50`;
+                    e.currentTarget.style.background = a.glow;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = m.cardBorder;
+                    e.currentTarget.style.background = m.bg;
+                  }}
+                >
+                  <span style={{ opacity: 0.75, marginRight: 6 }}>
+                    {r.type === "client"
+                      ? "🤝"
+                      : r.type === "project"
+                        ? "🗂️"
+                        : "🧾"}
+                  </span>
+                  {r.title}
+                </button>
+              ))}
+            </div>
+          )}
+        </Motion.div>
       </div>
     </Layout>
   );

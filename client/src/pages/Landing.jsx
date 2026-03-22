@@ -48,7 +48,7 @@ const Landing = () => {
 
   const features = [
     {
-      icon: "📁", title: "Project tracking",
+      icon: "🗂️", title: "Project tracking",
       desc: "Track progress, deadlines, and status across all your projects with beautiful cards and progress bars.",
       color: C.green,
     },
@@ -58,22 +58,22 @@ const Landing = () => {
       color: C.terracotta,
     },
     {
-      icon: "📄", title: "Invoice generation",
+      icon: "🧾", title: "Invoice generation",
       desc: "Create line-item invoices with auto tax calculation, status tracking, and one-click PDF download.",
       color: C.green,
     },
     {
-      icon: "💬", title: "Real-time chat",
+      icon: "📨", title: "Real-time chat",
       desc: "Per-project chat rooms powered by Socket.io — messages delivered instantly with full history.",
       color: C.terracotta,
     },
     {
-      icon: "📎", title: "File sharing",
+      icon: "🗃️", title: "File sharing",
       desc: "Upload, download, and manage files per project. Supports images, PDFs, Word, Excel, ZIP and more.",
       color: C.green,
     },
     {
-      icon: "🔔", title: "Notifications",
+      icon: "📬", title: "Notifications",
       desc: "Stay on top of activity — new messages, file uploads, and invoice updates all in one feed.",
       color: C.terracotta,
     },

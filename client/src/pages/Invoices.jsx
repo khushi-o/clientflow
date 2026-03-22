@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import API from "../api/axios";
 import useAuthStore from "../store/authStore";
 import { accents, modes } from "../theme";
@@ -7,13 +7,16 @@ import generateInvoicePDF from "../utils/generatePDF";
 import Layout from "../components/Layout";
 import PageHeader from "../components/PageHeader";
 import EmptyState from "../components/EmptyState";
+import { SingleDatePicker } from "../components/SingleDatePicker.jsx";
+import { pushRecent } from "../utils/recentItems";
 
 const today = new Date().toISOString().split("T")[0];
 
 const Invoices = () => {
   const accent = useAuthStore((s) => s.accent);
   const mode   = useAuthStore((s) => s.mode);
-  const navigate = useNavigate();
+  const user   = useAuthStore((s) => s.user);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [invoices, setInvoices]           = useState([]);
   const [loading, setLoading]             = useState(true);
   const [showModal, setShowModal]         = useState(false);
@@ -28,6 +31,13 @@ const Invoices = () => {
   const m = modes[mode];
 
   useEffect(() => { fetchInvoices(); }, []);
+
+  useEffect(() => {
+    const id = searchParams.get("invoiceId");
+    if (!id || !invoices.length) return;
+    const inv = invoices.find((x) => x._id === id);
+    if (inv) setSelectedInvoice(inv);
+  }, [searchParams, invoices]);
 
   const fetchInvoices = async () => {
     try {
@@ -80,7 +90,7 @@ const Invoices = () => {
       const res = await API.put(`/invoices/${id}`, { status });
       setInvoices(invoices.map((inv) => inv._id === id ? res.data : inv));
       setSelectedInvoice(res.data);
-    } catch (err) {
+    } catch {
       alert("Failed to update status");
     }
   };
@@ -91,7 +101,7 @@ const Invoices = () => {
       await API.delete(`/invoices/${id}`);
       setInvoices(invoices.filter((inv) => inv._id !== id));
       setSelectedInvoice(null);
-    } catch (err) {
+    } catch {
       alert("Failed to delete invoice");
     }
   };
@@ -167,7 +177,7 @@ const Invoices = () => {
             <EmptyState icon="⏳" title="Loading invoices..." subtitle="" />
           ) : invoices.length === 0 ? (
             <EmptyState
-              icon="📄" title="No invoices yet"
+              icon="🧾" title="No invoices yet"
               subtitle="Create your first invoice to get started"
               action="+ New Invoice"
               onAction={() => setShowModal(true)}
@@ -187,7 +197,17 @@ const Invoices = () => {
                 {invoices.map((inv) => (
                   <tr
                     key={inv._id}
-                    onClick={() => setSelectedInvoice(inv)}
+                    onClick={() => {
+                      setSelectedInvoice(inv);
+                      setSearchParams({ invoiceId: inv._id });
+                      pushRecent(user?._id, {
+                        type: "invoice",
+                        id: inv._id,
+                        title: inv.invoiceNumber,
+                        subtitle: inv.clientName,
+                        path: `/invoices?invoiceId=${inv._id}`,
+                      });
+                    }}
                     style={{ background: selectedInvoice?._id === inv._id ? a.glow : "transparent", transition: "all 0.2s" }}
                     onMouseEnter={(e) => { if (selectedInvoice?._id !== inv._id) e.currentTarget.style.background = m.cardBorder; }}
                     onMouseLeave={(e) => { if (selectedInvoice?._id !== inv._id) e.currentTarget.style.background = "transparent"; }}
@@ -267,8 +287,36 @@ const Invoices = () => {
               <input style={s.input} placeholder="Client email *" value={form.clientEmail} onChange={(e) => setForm({ ...form, clientEmail: e.target.value })} />
             </div>
             <div style={s.row2}>
-              <input style={s.input} type="date" value={form.dueDate} onChange={(e) => setForm({ ...form, dueDate: e.target.value })} />
-              <input style={s.input} type="number" placeholder="Tax %" value={form.tax} onChange={(e) => setForm({ ...form, tax: Number(e.target.value) })} />
+              <SingleDatePicker
+                value={form.dueDate}
+                onChange={(dueDate) => setForm({ ...form, dueDate })}
+                accent={a}
+                surface={m}
+                label="Due date"
+                zIndex={200}
+              />
+              <div>
+                <span
+                  style={{
+                    display: "block",
+                    fontSize: 10,
+                    fontWeight: 600,
+                    color: m.textMuted,
+                    textTransform: "uppercase",
+                    letterSpacing: "0.04em",
+                    marginBottom: 6,
+                  }}
+                >
+                  Tax %
+                </span>
+                <input
+                  style={{ ...s.input, marginBottom: 0 }}
+                  type="number"
+                  placeholder="0"
+                  value={form.tax}
+                  onChange={(e) => setForm({ ...form, tax: Number(e.target.value) })}
+                />
+              </div>
             </div>
             <div style={{ fontSize: 11, color: m.textMuted, marginBottom: 8, letterSpacing: "0.5px", textTransform: "uppercase" }}>Line Items</div>
             {form.items.map((item, i) => (

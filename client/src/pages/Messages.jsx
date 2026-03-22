@@ -6,8 +6,9 @@ import useAuthStore from "../store/authStore";
 import { accents, modes } from "../theme";
 import Layout from "../components/Layout";
 import EmptyState from "../components/EmptyState";
+import { getSocketUrl } from "../config/env.js";
 
-const socket = io("http://localhost:5000");
+const socket = io(getSocketUrl());
 
 const Messages = () => {
   const user   = useAuthStore((s) => s.user);
@@ -208,7 +209,7 @@ const Messages = () => {
         <div style={s.chatArea}>
           {!selectedProject ? (
             <EmptyState
-              icon="💬"
+              icon="📨"
               title="Select a conversation"
               subtitle="Choose a project from the left to start chatting"
             />

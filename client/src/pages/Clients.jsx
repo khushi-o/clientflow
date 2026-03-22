@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import API from "../api/axios";
 import useAuthStore from "../store/authStore";
 import { accents, modes } from "../theme";
 import Layout from "../components/Layout";
 import PageHeader from "../components/PageHeader";
 import EmptyState from "../components/EmptyState";
+import { pushRecent } from "../utils/recentItems";
 
 const Clients = () => {
   const accent = useAuthStore((s) => s.accent);
   const mode   = useAuthStore((s) => s.mode);
-  const navigate = useNavigate();
+  const user   = useAuthStore((s) => s.user);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [clients, setClients]             = useState([]);
   const [loading, setLoading]             = useState(true);
   const [showModal, setShowModal]         = useState(false);
@@ -22,6 +24,13 @@ const Clients = () => {
   const m = modes[mode];
 
   useEffect(() => { fetchClients(); }, []);
+
+  useEffect(() => {
+    const id = searchParams.get("clientId");
+    if (!id || !clients.length) return;
+    const c = clients.find((x) => x._id === id);
+    if (c) setSelectedClient(c);
+  }, [searchParams, clients]);
 
   const fetchClients = async () => {
     try {
@@ -52,7 +61,7 @@ const Clients = () => {
       await API.delete(`/clients/${id}`);
       setClients(clients.filter((c) => c._id !== id));
       setSelectedClient(null);
-    } catch (err) {
+    } catch {
       alert("Failed to delete client");
     }
   };
@@ -62,7 +71,7 @@ const Clients = () => {
       const res = await API.put(`/clients/${id}`, { status });
       setClients(clients.map((c) => c._id === id ? res.data : c));
       setSelectedClient(res.data);
-    } catch (err) {
+    } catch {
       alert("Failed to update status");
     }
   };
@@ -205,7 +214,7 @@ const Clients = () => {
             <EmptyState icon="⏳" title="Loading clients..." subtitle="" />
           ) : filtered.length === 0 ? (
             <EmptyState
-              icon="👥"
+              icon="🤝"
               title={search ? "No clients found" : "No clients yet"}
               subtitle={search ? "Try a different search term" : "Add your first client to get started"}
               action={search ? null : "+ Add Client"}
@@ -216,7 +225,17 @@ const Clients = () => {
               <div
                 key={c._id}
                 style={s.card(selectedClient?._id === c._id)}
-                onClick={() => setSelectedClient(c)}
+                onClick={() => {
+                  setSelectedClient(c);
+                  setSearchParams({ clientId: c._id });
+                  pushRecent(user?._id, {
+                    type: "client",
+                    id: c._id,
+                    title: c.name,
+                    subtitle: c.email,
+                    path: `/clients?clientId=${c._id}`,
+                  });
+                }}
                 onMouseEnter={(e) => {
                   if (selectedClient?._id !== c._id) {
                     e.currentTarget.style.transform = "translateY(-4px)";

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import API from "../api/axios";
 import useAuthStore from "../store/authStore";
 import { accents, modes } from "../theme";
+import ThemePicker from "../components/ThemePicker.jsx";
 import Layout from "../components/Layout";
 import PageHeader from "../components/PageHeader";
 
@@ -10,10 +10,7 @@ const Profile = () => {
   const user      = useAuthStore((s) => s.user);
   const accent    = useAuthStore((s) => s.accent);
   const mode      = useAuthStore((s) => s.mode);
-  const setAccent = useAuthStore((s) => s.setAccent);
-  const setMode   = useAuthStore((s) => s.setMode);
   const login     = useAuthStore((s) => s.login);
-  const navigate  = useNavigate();
 
   const a = accents[accent];
   const m = modes[mode];
@@ -163,34 +160,6 @@ const Profile = () => {
       color: type === "success" ? "#34d399" : "#f87171",
       border: `1px solid ${type === "success" ? "rgba(52,211,153,0.3)" : "rgba(248,113,113,0.3)"}`,
     }),
-    themeGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 },
-    themeSection: { marginBottom: 16 },
-    themeSectionLabel: {
-      fontSize: 11, fontWeight: 600, color: m.textMuted,
-      letterSpacing: "0.3px", marginBottom: 10, display: "block",
-      textTransform: "uppercase",
-    },
-    modeButtons: { display: "flex", gap: 8 },
-    modeBtn: (active) => ({
-      padding: "8px 16px", borderRadius: 8, border: `1px solid ${active ? a.color : m.cardBorder}`,
-      background: active ? a.glow : "transparent",
-      color: active ? a.color : m.textMuted, fontSize: 12,
-      fontWeight: active ? 600 : 400, cursor: "pointer",
-      transition: "all 0.2s",
-    }),
-    accentDots: { display: "flex", gap: 10, alignItems: "center" },
-    accentDot: (key) => ({
-      width: 28, height: 28, borderRadius: "50%",
-      background: accents[key].color, cursor: "pointer",
-      border: accent === key ? `3px solid ${m.text}` : "3px solid transparent",
-      boxShadow: accent === key ? `0 0 12px ${accents[key].color}` : "none",
-      transition: "all 0.2s",
-    }),
-    accentLabel: (key) => ({
-      fontSize: 11, color: accent === key ? a.color : m.textMuted,
-      textAlign: "center", marginTop: 4, fontWeight: accent === key ? 600 : 400,
-    }),
-    accentItem: { display: "flex", flexDirection: "column", alignItems: "center", cursor: "pointer" },
   };
 
   return (
@@ -327,42 +296,9 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Theme settings */}
         <div style={s.cardFull}>
-          <div style={s.cardTitle}>🎨 Theme Settings</div>
-          <div style={s.themeGrid}>
-            <div style={s.themeSection}>
-              <span style={s.themeSectionLabel}>Display Mode</span>
-              <div style={s.modeButtons}>
-                {[
-                  { key: "light", label: "☀️ Light" },
-                  { key: "dark",  label: "🌙 Dark"  },
-                  { key: "night", label: "🌑 Night" },
-                ].map(({ key, label }) => (
-                  <button
-                    key={key}
-                    style={s.modeBtn(mode === key)}
-                    onClick={() => setMode(key)}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div style={s.themeSection}>
-              <span style={s.themeSectionLabel}>Accent Color</span>
-              <div style={s.accentDots}>
-                {Object.keys(accents).map((key) => (
-                  <div key={key} style={s.accentItem} onClick={() => setAccent(key)}>
-                    <div style={s.accentDot(key)}></div>
-                    <div style={s.accentLabel(key)}>
-                      {key.charAt(0).toUpperCase() + key.slice(1)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <div style={s.cardTitle}>🎨 Appearance</div>
+          <ThemePicker variant="profile" />
         </div>
       </div>
     </Layout>

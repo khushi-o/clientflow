@@ -11,6 +11,7 @@ import Files from "./pages/Files";
 import Profile from "./pages/Profile";
 import Notifications from "./pages/Notifications";
 import useAuthStore from "./store/authStore";
+import { ThemeChangeProvider } from "./contexts/ThemeChangeContext.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const token = useAuthStore((s) => s.token);
@@ -20,6 +21,7 @@ const ProtectedRoute = ({ children }) => {
 const App = () => {
   return (
     <BrowserRouter>
+      <ThemeChangeProvider>
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
@@ -33,6 +35,7 @@ const App = () => {
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       </Routes>
+      </ThemeChangeProvider>
     </BrowserRouter>
   );
 };
