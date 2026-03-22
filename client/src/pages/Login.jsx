@@ -6,7 +6,7 @@ import useAuthStore from "../store/authStore";
 const Login = () => {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
-  const login = useAuthStore((state) => state.login);
+  const login    = useAuthStore((s) => s.login);
 
   const onSubmit = async (data) => {
     try {
@@ -19,101 +19,151 @@ const Login = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <div style={styles.card}>
-        <h2 style={styles.title}>Welcome back</h2>
-        <p style={styles.subtitle}>Sign in to ClientFlow</p>
-        <form onSubmit={handleSubmit(onSubmit)} style={styles.form}>
-          <input
-            {...register("email")}
-            placeholder="Email"
-            type="email"
-            style={styles.input}
-            required
-          />
-          <input
-            {...register("password")}
-            placeholder="Password"
-            type="password"
-            style={styles.input}
-            required
-          />
-          <button type="submit" style={styles.button}>
-            Sign In
-          </button>
-        </form>
-        <p style={styles.link}>
-          Don't have an account?{" "}
-          <Link to="/register" style={styles.anchor}>
-            Register
-          </Link>
-        </p>
+    <div style={s.page}>
+      {/* Left panel */}
+      <div style={s.left}>
+        <div style={s.brand}>
+          <div style={s.brandLogo}>CF</div>
+          <div style={s.brandName}>ClientFlow</div>
+        </div>
+        <div style={s.tagline}>
+          <div style={s.taglineTitle}>Manage clients,<br />projects & invoices</div>
+          <div style={s.taglineSub}>All in one beautiful workspace built for freelancers and agencies.</div>
+        </div>
+        <div style={s.features}>
+          {["📁 Project tracking", "👥 Client management", "📄 Invoice generation", "💬 Real-time chat", "📎 File sharing"].map((f) => (
+            <div key={f} style={s.feature}>{f}</div>
+          ))}
+        </div>
+      </div>
+
+      {/* Right panel */}
+      <div style={s.right}>
+        <div style={s.card}>
+          <div style={s.cardHeader}>
+            <div style={s.title}>Welcome back</div>
+            <div style={s.subtitle}>Sign in to your workspace</div>
+          </div>
+          <form onSubmit={handleSubmit(onSubmit)} style={s.form}>
+            <div style={s.fieldGroup}>
+              <label style={s.label}>Email</label>
+              <input
+                {...register("email")}
+                type="email" required
+                placeholder="you@example.com"
+                style={s.input}
+                onFocus={(e) => e.currentTarget.style.borderColor = "#818cf8"}
+                onBlur={(e) => e.currentTarget.style.borderColor = "#e2e8f0"}
+              />
+            </div>
+            <div style={s.fieldGroup}>
+              <label style={s.label}>Password</label>
+              <input
+                {...register("password")}
+                type="password" required
+                placeholder="••••••••"
+                style={s.input}
+                onFocus={(e) => e.currentTarget.style.borderColor = "#818cf8"}
+                onBlur={(e) => e.currentTarget.style.borderColor = "#e2e8f0"}
+              />
+            </div>
+            <button
+              type="submit" style={s.btn}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-2px)";
+                e.currentTarget.style.boxShadow = "0 8px 24px rgba(129,140,248,0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 16px rgba(129,140,248,0.4)";
+              }}
+            >
+              Sign In →
+            </button>
+          </form>
+          <div style={s.footer}>
+            Don't have an account?{" "}
+            <Link to="/register" style={s.link}>Create one</Link>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-const styles = {
-  container: {
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#f5f5f5",
+const s = {
+  page: {
+    display: "flex", minHeight: "100vh",
+    fontFamily: "'DM Sans', sans-serif",
+    background: "#080b14",
   },
-  card: {
-    backgroundColor: "#fff",
-    padding: "40px",
-    borderRadius: "12px",
-    boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-    width: "100%",
-    maxWidth: "400px",
+  left: {
+    flex: 1, padding: "60px 48px",
+    display: "flex", flexDirection: "column",
+    justifyContent: "space-between",
+    background: "linear-gradient(135deg, #0f0e1a 0%, #080b14 100%)",
+    borderRight: "1px solid rgba(255,255,255,0.06)",
   },
+  brand: { display: "flex", alignItems: "center", gap: 12 },
+  brandLogo: {
+    width: 40, height: 40, borderRadius: 10,
+    background: "linear-gradient(135deg, #818cf8, #6366f1)",
+    display: "flex", alignItems: "center", justifyContent: "center",
+    fontSize: 14, fontWeight: 800, color: "#fff",
+    boxShadow: "0 0 20px rgba(129,140,248,0.4)",
+  },
+  brandName: {
+    fontFamily: "'Syne', sans-serif", fontSize: 20,
+    fontWeight: 700, color: "#fff",
+  },
+  tagline: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" },
+  taglineTitle: {
+    fontFamily: "'Syne', sans-serif", fontSize: 42,
+    fontWeight: 700, color: "#fff", lineHeight: 1.2,
+    marginBottom: 16, letterSpacing: "-1px",
+  },
+  taglineSub: { fontSize: 16, color: "rgba(255,255,255,0.4)", lineHeight: 1.6, maxWidth: 340 },
+  features: { display: "flex", flexDirection: "column", gap: 10 },
+  feature: {
+    fontSize: 13, color: "rgba(255,255,255,0.5)",
+    display: "flex", alignItems: "center", gap: 8,
+  },
+  right: {
+    width: 480, display: "flex", alignItems: "center",
+    justifyContent: "center", padding: "40px 48px",
+    background: "#080b14",
+  },
+  card: { width: "100%", maxWidth: 380 },
+  cardHeader: { marginBottom: 32 },
   title: {
-    margin: "0 0 8px 0",
-    fontSize: "24px",
-    fontWeight: "700",
-    color: "#111",
+    fontFamily: "'Syne', sans-serif", fontSize: 28,
+    fontWeight: 700, color: "#fff", marginBottom: 8,
   },
-  subtitle: {
-    margin: "0 0 24px 0",
-    color: "#666",
-    fontSize: "14px",
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "12px",
-  },
+  subtitle: { fontSize: 14, color: "rgba(255,255,255,0.4)" },
+  form: { display: "flex", flexDirection: "column", gap: 16 },
+  fieldGroup: { display: "flex", flexDirection: "column", gap: 6 },
+  label: { fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.6)", letterSpacing: "0.3px" },
   input: {
-    padding: "12px 16px",
-    borderRadius: "8px",
-    border: "1px solid #ddd",
-    fontSize: "14px",
-    outline: "none",
+    padding: "12px 16px", borderRadius: 10,
+    border: "1px solid #e2e8f0",
+    background: "rgba(255,255,255,0.05)",
+    color: "#fff", fontSize: 14, outline: "none",
+    fontFamily: "'DM Sans', sans-serif",
+    transition: "border-color 0.2s",
   },
-  button: {
-    padding: "12px",
-    backgroundColor: "#6366f1",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    fontSize: "15px",
-    fontWeight: "600",
-    cursor: "pointer",
-    marginTop: "4px",
+  btn: {
+    padding: "13px", borderRadius: 10, border: "none",
+    background: "linear-gradient(135deg, #818cf8, #6366f1)",
+    color: "#fff", fontSize: 15, fontWeight: 600,
+    cursor: "pointer", marginTop: 8,
+    boxShadow: "0 4px 16px rgba(129,140,248,0.4)",
+    transition: "all 0.2s",
   },
-  link: {
-    marginTop: "20px",
-    textAlign: "center",
-    fontSize: "14px",
-    color: "#666",
+  footer: {
+    marginTop: 24, textAlign: "center",
+    fontSize: 13, color: "rgba(255,255,255,0.4)",
   },
-  anchor: {
-    color: "#6366f1",
-    textDecoration: "none",
-    fontWeight: "600",
-  },
+  link: { color: "#818cf8", textDecoration: "none", fontWeight: 600 },
 };
 
 export default Login;

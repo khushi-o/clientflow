@@ -1,0 +1,10 @@
+$env:Path += ";C:\Users\cushh\mongodb\bin"
+mongod --dbpath C:\Users\cushh\mongodb\data\db
+
+
+cd C:\Users\cushh\Documents\clientflow\server
+npm run dev
+
+
+cd C:\Users\cushh\Documents\clientflow\client
+npm run dev
