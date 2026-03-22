@@ -25,6 +25,7 @@ app.use("/api/invoices", require("./routes/invoice.routes"));
 app.use("/api/clients", require("./routes/client.routes"));
 app.use("/api/messages", require("./routes/message.routes"));
 app.use("/api/files", require("./routes/file.routes"));
+app.use("/api/notifications", require("./routes/notification.routes"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Socket.io

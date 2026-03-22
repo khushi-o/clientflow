@@ -1,15 +1,18 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import API from "../api/axios";
 import useAuthStore from "../store/authStore";
 import { accents, modes } from "../theme";
 
 const NAV = [
-  ["Dashboard", "🏠", "/dashboard"],
-  ["Projects",  "📁", "/projects"],
-  ["Clients",   "👥", "/clients"],
-  ["Invoices",  "📄", "/invoices"],
-  ["Messages",  "💬", "/messages"],
-  ["Files",     "📎", "/files"],
-  ["Settings", "⚙️", "/profile"],
+  ["Dashboard",     "🏠", "/dashboard"],
+  ["Projects",      "📁", "/projects"],
+  ["Clients",       "👥", "/clients"],
+  ["Invoices",      "📄", "/invoices"],
+  ["Messages",      "💬", "/messages"],
+  ["Files",         "📎", "/files"],
+  ["Notifications", "🔔", "/notifications"],
+  ["Settings",      "⚙️", "/profile"],
 ];
 
 const Sidebar = () => {
@@ -18,9 +21,23 @@ const Sidebar = () => {
   const logout    = useAuthStore((s) => s.logout);
   const accent    = useAuthStore((s) => s.accent);
   const mode      = useAuthStore((s) => s.mode);
+  const [unread, setUnread] = useState(0);
 
   const a = accents[accent];
   const m = modes[mode];
+
+  useEffect(() => {
+    fetchUnread();
+    const interval = setInterval(fetchUnread, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const fetchUnread = async () => {
+    try {
+      const res = await API.get("/notifications");
+      setUnread(res.data.filter((n) => !n.read).length);
+    } catch (err) {}
+  };
 
   const s = {
     sidebar: {
@@ -48,6 +65,7 @@ const Sidebar = () => {
       transition: "all 0.2s ease",
       transform: active ? "translateX(2px)" : "translateX(0)",
       fontWeight: active ? 500 : 400,
+      position: "relative",
     }),
     navDot: (active) => ({
       width: 6, height: 6, borderRadius: "50%", flexShrink: 0,
@@ -56,16 +74,19 @@ const Sidebar = () => {
       transition: "all 0.2s ease",
       transform: active ? "scale(1.3)" : "scale(1)",
     }),
+    badge: {
+      marginLeft: "auto", background: a.color, color: "#fff",
+      fontSize: 9, fontWeight: 700, padding: "1px 6px",
+      borderRadius: 20, minWidth: 16, textAlign: "center",
+    },
     divider: {
-      height: 1, background: m.cardBorder,
-      margin: "12px 20px",
+      height: 1, background: m.cardBorder, margin: "12px 20px",
     },
     logoutBtn: {
       margin: "auto 10px 0", padding: "10px 12px", borderRadius: 8,
       fontSize: 13, color: "#f87171", cursor: "pointer",
       display: "flex", alignItems: "center", gap: 10,
-      transition: "all 0.2s",
-      border: "none", background: "transparent",
+      transition: "all 0.2s", border: "none", background: "transparent",
     },
   };
 
@@ -84,16 +105,23 @@ const Sidebar = () => {
             style={s.navItem(active)}
             onClick={() => navigate(path)}
             onMouseEnter={(e) => {
-              if (!active) e.currentTarget.style.color = m.text;
-              if (!active) e.currentTarget.style.background = m.cardBorder;
+              if (!active) {
+                e.currentTarget.style.color = m.text;
+                e.currentTarget.style.background = m.cardBorder;
+              }
             }}
             onMouseLeave={(e) => {
-              if (!active) e.currentTarget.style.color = m.textMuted;
-              if (!active) e.currentTarget.style.background = "transparent";
+              if (!active) {
+                e.currentTarget.style.color = m.textMuted;
+                e.currentTarget.style.background = "transparent";
+              }
             }}
           >
             <div style={s.navDot(active)}></div>
             {icon} {label}
+            {label === "Notifications" && unread > 0 && (
+              <span style={s.badge}>{unread}</span>
+            )}
           </div>
         );
       })}

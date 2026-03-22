@@ -8,6 +8,7 @@ import Clients from "./pages/Clients";
 import Messages from "./pages/Messages";
 import Profile from "./pages/Profile";
 import useAuthStore from "./store/authStore";
+import Notifications from "./pages/Notifications";
 import Files from "./pages/Files";
 
 const ProtectedRoute = ({ children }) => {
@@ -29,6 +30,7 @@ const App = () => {
         <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path="/files" element={<ProtectedRoute><Files /></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );
