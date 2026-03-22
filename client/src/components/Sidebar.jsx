@@ -16,15 +16,15 @@ const NAV = [
 ];
 
 const Sidebar = () => {
-  const navigate  = useNavigate();
-  const location  = useLocation();
-  const logout    = useAuthStore((s) => s.logout);
-  const accent    = useAuthStore((s) => s.accent);
-  const mode      = useAuthStore((s) => s.mode);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const logout   = useAuthStore((s) => s.logout);
+  const accent   = useAuthStore((s) => s.accent);
+  const mode     = useAuthStore((s) => s.mode);
   const [unread, setUnread] = useState(0);
 
-  const a = accents[accent];
-  const m = modes[mode];
+  const a = accents[accent] || accents["earthy"];
+  const m = modes[mode]     || modes["earthy"];
 
   useEffect(() => {
     fetchUnread();
@@ -45,7 +45,7 @@ const Sidebar = () => {
       flexDirection: "column", padding: "24px 0",
       borderRight: `1px solid ${m.cardBorder}`,
       flexShrink: 0, height: "100vh", position: "sticky",
-      top: 0, transition: "all 0.3s ease",
+      top: 0, transition: "all 0.3s ease", overflowY: "auto",
     },
     logo: {
       fontFamily: "'Syne', sans-serif", fontSize: 18,
@@ -63,16 +63,13 @@ const Sidebar = () => {
       color: active ? m.text : m.textMuted,
       background: active ? a.glow : "transparent",
       transition: "all 0.2s ease",
-      transform: active ? "translateX(2px)" : "translateX(0)",
       fontWeight: active ? 500 : 400,
-      position: "relative",
     }),
     navDot: (active) => ({
       width: 6, height: 6, borderRadius: "50%", flexShrink: 0,
       background: active ? a.color : m.textMuted,
       boxShadow: active ? `0 0 8px ${a.color}` : "none",
       transition: "all 0.2s ease",
-      transform: active ? "scale(1.3)" : "scale(1)",
     }),
     badge: {
       marginLeft: "auto", background: a.color, color: "#fff",
@@ -83,18 +80,20 @@ const Sidebar = () => {
       height: 1, background: m.cardBorder, margin: "12px 20px",
     },
     logoutBtn: {
-      margin: "auto 10px 0", padding: "10px 12px", borderRadius: 8,
+      margin: "8px 10px 0", padding: "10px 14px", borderRadius: 8,
       fontSize: 13, color: "#f87171", cursor: "pointer",
-      display: "flex", alignItems: "center", gap: 10,
-      transition: "all 0.2s", border: "none", background: "transparent",
+      display: "flex", alignItems: "center", gap: 8,
+      transition: "all 0.2s", border: "1px solid transparent",
+      background: "transparent", width: "calc(100% - 20px)",
+      fontFamily: "'DM Sans', sans-serif", fontWeight: 500,
     },
   };
 
   return (
     <div style={s.sidebar}>
       <div style={s.logo} onClick={() => navigate("/dashboard")}>
-        <span style={{ color: m.text }}>Client</span>
-        <span style={{ color: a.color }}>Flow</span>
+      <span style={{ color: a.color }}>Client</span>
+      <span style={{ color: m.text }}>Flow</span>
       </div>
       <div style={s.navLabel}>Menu</div>
       {NAV.map(([label, icon, path]) => {
@@ -129,10 +128,21 @@ const Sidebar = () => {
       <button
         style={s.logoutBtn}
         onClick={() => { logout(); navigate("/login"); }}
-        onMouseEnter={(e) => e.currentTarget.style.background = "rgba(248,113,113,0.1)"}
-        onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = "rgba(248,113,113,0.08)";
+          e.currentTarget.style.borderColor = "rgba(248,113,113,0.2)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "transparent";
+          e.currentTarget.style.borderColor = "transparent";
+        }}
       >
-        🚪 Logout
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Sign Out
       </button>
     </div>
   );

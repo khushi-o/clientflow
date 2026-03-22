@@ -18,8 +18,8 @@ const Dashboard = () => {
   const [stats, setStats]     = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const a = accents[accent];
-  const m = modes[mode];
+  const a = accents[accent] || accents["earthy"];
+  const m = modes[mode]     || modes["earthy"];
 
   useEffect(() => { fetchStats(); }, []);
 
@@ -41,28 +41,30 @@ const Dashboard = () => {
     "On Hold": { background: "rgba(248,113,113,0.12)", color: "#f87171" },
   }[status] || {});
 
+  const THEMES = [
+    { key: "earthy", accentKey: "earthy", label: "Earthy", dot: "#1B4332" },
+    { key: "dark",   accentKey: "cyber",  label: "Cyber",  dot: "#B794F4" },
+    { key: "night",  accentKey: "sunset", label: "Sunset", dot: "#6B46C1" },
+    { key: "light",  accentKey: "violet", label: "Light",  dot: "#818cf8" },
+  ];
+
   const s = {
-    controls: { display: "flex", alignItems: "center", gap: 10 },
+    controls: { display: "flex", alignItems: "center", gap: 8 },
     modeBtn: (active) => ({
-      padding: "5px 12px", borderRadius: 20, fontSize: 11,
-      fontWeight: 500, cursor: "pointer", border: "none",
+      padding: "5px 14px", borderRadius: 20, fontSize: 11,
+      fontWeight: 500, cursor: "pointer",
+      border: `1px solid ${active ? a.color : m.cardBorder}`,
       background: active ? a.color : m.card,
       color: active ? "#fff" : m.textMuted,
-      boxShadow: active ? `0 0 12px ${a.color}60` : "none",
       transition: "all 0.2s",
-    }),
-    accentDot: (key) => ({
-      width: 16, height: 16, borderRadius: "50%",
-      background: accents[key].color, cursor: "pointer",
-      border: accent === key ? `2px solid ${m.text}` : "2px solid transparent",
-      boxShadow: accent === key ? `0 0 10px ${accents[key].color}` : "none",
-      transition: "all 0.2s", flexShrink: 0,
+      display: "flex", alignItems: "center", gap: 6,
     }),
     avatar: {
       width: 32, height: 32, borderRadius: "50%",
       background: a.color, display: "flex", alignItems: "center",
-      justifyContent: "center", fontSize: 12, fontWeight: 600,
-      color: "#fff", boxShadow: `0 0 12px ${a.color}80`,
+      justifyContent: "center", fontSize: 12, fontWeight: 700,
+      color: "#fff", boxShadow: `0 0 12px ${a.color}60`,
+      marginLeft: 4,
     },
     content: { padding: "24px 28px", flex: 1 },
     statsGrid: {
@@ -87,13 +89,19 @@ const Dashboard = () => {
       marginBottom: 8, transition: "all 0.2s",
       cursor: "pointer", background: m.bg,
     },
-    pTop: { display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 },
+    pTop: {
+      display: "flex", justifyContent: "space-between",
+      alignItems: "center", marginBottom: 6,
+    },
     pName: { fontSize: 13, fontWeight: 500, color: m.text },
-    barBg: { height: 3, background: m.cardBorder, borderRadius: 2, overflow: "hidden" },
+    barBg: {
+      height: 3, background: m.cardBorder,
+      borderRadius: 2, overflow: "hidden",
+    },
     barFill: (pct) => ({
       height: "100%", borderRadius: 2, width: `${pct}%`,
       background: `linear-gradient(90deg, ${a.color}, ${a.color}99)`,
-      boxShadow: `0 0 6px ${a.color}60`, transition: "width 0.8s ease",
+      transition: "width 0.8s ease",
     }),
     actionItem: {
       padding: "12px 16px", borderRadius: 10,
@@ -108,9 +116,9 @@ const Dashboard = () => {
   };
 
   const statCards = stats ? [
-    { label: "Projects",         value: stats.projects,        sub: "total",        icon: "📁" },
-    { label: "Clients",          value: stats.clients,         sub: "total",        icon: "👥" },
-    { label: "Pending Invoices", value: stats.pendingInvoices, sub: "unpaid",       icon: "📄" },
+    { label: "Projects",         value: stats.projects,        sub: "total",              icon: "📁" },
+    { label: "Clients",          value: stats.clients,         sub: "total",              icon: "👥" },
+    { label: "Pending Invoices", value: stats.pendingInvoices, sub: "unpaid",             icon: "📄" },
     { label: "Revenue",          value: `₹${stats.totalRevenue.toLocaleString()}`, sub: "from paid invoices", icon: "💰" },
   ] : [
     { label: "Projects",         value: "—", sub: "loading", icon: "📁" },
@@ -131,16 +139,21 @@ const Dashboard = () => {
     <Layout>
       <PageHeader title={`Good morning, ${user?.name} 👋`}>
         <div style={s.controls}>
-          {["light","dark","night"].map(md => (
-            <button key={md} onClick={() => setMode(md)} style={s.modeBtn(mode === md)}>
-              {md === "light" ? "☀️" : md === "dark" ? "🌙" : "🌑"}
+          {THEMES.map(({ key, accentKey, label, dot }) => (
+            <button
+              key={key}
+              title={label}
+              style={s.modeBtn(mode === key)}
+              onClick={() => { setMode(key); setAccent(accentKey); }}
+            >
+              <div style={{
+                width: 8, height: 8, borderRadius: "50%",
+                background: dot, flexShrink: 0,
+                boxShadow: mode === key ? `0 0 6px ${dot}` : "none",
+              }} />
+              {label}
             </button>
           ))}
-          <div style={{ display: "flex", gap: 5 }}>
-            {Object.keys(accents).map(key => (
-              <div key={key} onClick={() => setAccent(key)} style={s.accentDot(key)} />
-            ))}
-          </div>
           <div style={s.avatar}>{user?.name?.[0]?.toUpperCase()}</div>
         </div>
       </PageHeader>
@@ -159,7 +172,8 @@ const Dashboard = () => {
               <EmptyState icon="⏳" title="Loading..." subtitle="" />
             ) : !stats?.recentProjects?.length ? (
               <EmptyState
-                icon="📁" title="No projects yet"
+                icon="📁"
+                title="No projects yet"
                 subtitle="Create your first project to get started"
                 action="Create Project"
                 onAction={() => navigate("/projects")}
@@ -180,7 +194,13 @@ const Dashboard = () => {
                 >
                   <div style={s.pTop}>
                     <span style={s.pName}>{p.name}</span>
-                    <span style={{ fontSize: 9, padding: "2px 8px", borderRadius: 20, fontWeight: 600, ...statusColor(p.status) }}>{p.status}</span>
+                    <span style={{
+                      fontSize: 9, padding: "2px 8px",
+                      borderRadius: 20, fontWeight: 600,
+                      ...statusColor(p.status),
+                    }}>
+                      {p.status}
+                    </span>
                   </div>
                   <div style={s.barBg}>
                     <div style={s.barFill(p.progress)}></div>

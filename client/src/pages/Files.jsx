@@ -88,16 +88,22 @@ const Files = () => {
   };
 
   const s = {
-    wrapper: { display: "flex", flex: 1, minWidth: 0, overflow: "hidden", height: "calc(100vh - 57px)" },
+    wrapper: {
+      display: "flex", flex: 1, minWidth: 0,
+      overflow: "hidden", height: "100%",
+      position: "relative",
+    },
     projectList: {
-      width: 260, borderRight: `1px solid ${m.cardBorder}`,
+      width: 240, borderRight: `1px solid ${m.cardBorder}`,
       display: "flex", flexDirection: "column",
-      background: m.sidebar, flexShrink: 0, overflowY: "auto",
+      background: m.sidebar, flexShrink: 0,
+      height: "100%", overflowY: "auto",
     },
     projectListHeader: {
       padding: "16px 20px", borderBottom: `1px solid ${m.cardBorder}`,
       fontFamily: "'Syne', sans-serif", fontSize: 13,
-      fontWeight: 700, color: m.text, flexShrink: 0,
+      fontWeight: 700, color: m.text,
+      position: "sticky", top: 0, background: m.sidebar, zIndex: 1,
     },
     projectItem: (active) => ({
       padding: "14px 20px", cursor: "pointer",
@@ -111,7 +117,10 @@ const Files = () => {
       color: active ? m.text : m.textMuted,
     }),
     projectItemSub: { fontSize: 11, color: m.textMuted, marginTop: 3 },
-    fileArea: { flex: 1, display: "flex", flexDirection: "column", minWidth: 0, overflow: "hidden" },
+    fileArea: {
+      flex: 1, display: "flex", flexDirection: "column",
+      minWidth: 0, height: "100%", overflow: "hidden",
+    },
     fileHeader: {
       padding: "14px 24px", borderBottom: `1px solid ${m.cardBorder}`,
       background: m.topbar, display: "flex",
@@ -147,7 +156,10 @@ const Files = () => {
       fontSize: 12, fontWeight: 600, color: m.text,
       marginBottom: 4, wordBreak: "break-all", lineHeight: 1.4,
     },
-    fileMeta: { fontSize: 10, color: m.textMuted, marginBottom: 12, lineHeight: 1.5 },
+    fileMeta: {
+      fontSize: 10, color: m.textMuted,
+      marginBottom: 12, lineHeight: 1.5,
+    },
     fileActions: { display: "flex", gap: 6 },
     fileBtn: (color) => ({
       flex: 1, padding: "6px 8px", borderRadius: 6, border: "none",
@@ -164,7 +176,6 @@ const Files = () => {
   return (
     <Layout>
       <div style={s.wrapper}>
-        {/* Project list */}
         <div style={s.projectList}>
           <div style={s.projectListHeader}>📎 Projects</div>
           {projects.length === 0 ? (
@@ -196,7 +207,6 @@ const Files = () => {
           )}
         </div>
 
-        {/* File area */}
         <div style={s.fileArea}>
           {!selectedProject ? (
             <EmptyState

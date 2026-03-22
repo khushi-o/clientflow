@@ -41,9 +41,7 @@ const Messages = () => {
     try {
       const res = await API.get("/projects");
       setProjects(res.data);
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) { console.error(err); }
   };
 
   const selectProject = async (project) => {
@@ -53,11 +51,8 @@ const Messages = () => {
     try {
       const res = await API.get(`/messages/${project._id}`);
       setMessages(res.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
   };
 
   const sendMessage = async () => {
@@ -72,9 +67,7 @@ const Messages = () => {
     socket.emit("send_message", msg);
     try {
       await API.post(`/messages/${selectedProject._id}`, { text: text.trim() });
-    } catch (err) {
-      console.error(err);
-    }
+    } catch (err) { console.error(err); }
     setText("");
   };
 
@@ -86,16 +79,22 @@ const Messages = () => {
   const formatTime = (date) => new Date(date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
   const s = {
-    wrapper: { display: "flex", flex: 1, minWidth: 0, overflow: "hidden" },
+    wrapper: {
+      display: "flex", flex: 1, minWidth: 0,
+      overflow: "hidden", height: "100%",
+      position: "relative",
+    },
     projectList: {
       width: 260, borderRight: `1px solid ${m.cardBorder}`,
       display: "flex", flexDirection: "column",
       background: m.sidebar, flexShrink: 0,
+      height: "100%", overflowY: "auto",
     },
     projectListHeader: {
       padding: "16px 20px", borderBottom: `1px solid ${m.cardBorder}`,
       fontFamily: "'Syne', sans-serif", fontSize: 13,
       fontWeight: 700, color: m.text,
+      position: "sticky", top: 0, background: m.sidebar, zIndex: 1,
     },
     projectItem: (active) => ({
       padding: "14px 20px", cursor: "pointer",
@@ -109,10 +108,14 @@ const Messages = () => {
       color: active ? m.text : m.textMuted,
     }),
     projectItemSub: { fontSize: 11, color: m.textMuted, marginTop: 3 },
-    chatArea: { flex: 1, display: "flex", flexDirection: "column", minWidth: 0 },
+    chatArea: {
+      flex: 1, display: "flex", flexDirection: "column",
+      minWidth: 0, height: "100%", overflow: "hidden",
+    },
     chatHeader: {
       padding: "16px 24px", borderBottom: `1px solid ${m.cardBorder}`,
-      background: m.topbar, display: "flex", alignItems: "center", gap: 12,
+      background: m.topbar, display: "flex",
+      alignItems: "center", gap: 12, flexShrink: 0,
     },
     chatHeaderDot: {
       width: 8, height: 8, borderRadius: "50%",
@@ -144,13 +147,13 @@ const Messages = () => {
       color: me ? "#fff" : m.text, fontSize: 13, lineHeight: 1.5,
       border: me ? "none" : `1px solid ${m.cardBorder}`,
       boxShadow: me ? `0 4px 16px ${a.color}40` : m.shadow,
-      transition: "all 0.2s",
     }),
     msgName: { fontSize: 10, color: m.textMuted, marginBottom: 4, fontWeight: 600 },
     msgTime: { fontSize: 10, opacity: 0.5, marginTop: 4, textAlign: "right" },
     inputArea: {
       padding: "16px 24px", borderTop: `1px solid ${m.cardBorder}`,
-      background: m.topbar, display: "flex", gap: 10, alignItems: "flex-end",
+      background: m.topbar, display: "flex", gap: 10,
+      alignItems: "flex-end", flexShrink: 0,
     },
     input: {
       flex: 1, padding: "10px 16px", borderRadius: 12,
@@ -170,111 +173,99 @@ const Messages = () => {
 
   return (
     <Layout>
-      <div style={{ display: "flex", flexDirection: "column", flex: 1, minWidth: 0, minHeight: 0, height: "100vh" }}>
-        <div style={s.wrapper}>
-          {/* Project list */}
-          <div style={s.projectList}>
-            <div style={s.projectListHeader}>💬 Conversations</div>
-            {projects.length === 0 ? (
-              <div style={{ padding: 20, fontSize: 12, color: m.textMuted }}>
-                No projects yet.{" "}
-                <span style={{ color: a.color, cursor: "pointer" }} onClick={() => navigate("/projects")}>
-                  Create one
-                </span>
+      <div style={s.wrapper}>
+        <div style={s.projectList}>
+          <div style={s.projectListHeader}>💬 Conversations</div>
+          {projects.length === 0 ? (
+            <div style={{ padding: 20, fontSize: 12, color: m.textMuted }}>
+              No projects yet.{" "}
+              <span style={{ color: a.color, cursor: "pointer" }} onClick={() => navigate("/projects")}>
+                Create one
+              </span>
+            </div>
+          ) : (
+            projects.map((p) => (
+              <div
+                key={p._id}
+                style={s.projectItem(selectedProject?._id === p._id)}
+                onClick={() => selectProject(p)}
+                onMouseEnter={(e) => {
+                  if (selectedProject?._id !== p._id)
+                    e.currentTarget.style.background = m.cardBorder;
+                }}
+                onMouseLeave={(e) => {
+                  if (selectedProject?._id !== p._id)
+                    e.currentTarget.style.background = "transparent";
+                }}
+              >
+                <div style={s.projectItemName(selectedProject?._id === p._id)}>{p.name}</div>
+                <div style={s.projectItemSub}>{p.status}</div>
               </div>
-            ) : (
-              projects.map((p) => (
-                <div
-                  key={p._id}
-                  style={s.projectItem(selectedProject?._id === p._id)}
-                  onClick={() => selectProject(p)}
-                  onMouseEnter={(e) => {
-                    if (selectedProject?._id !== p._id)
-                      e.currentTarget.style.background = m.cardBorder;
-                  }}
-                  onMouseLeave={(e) => {
-                    if (selectedProject?._id !== p._id)
-                      e.currentTarget.style.background = "transparent";
-                  }}
-                >
-                  <div style={s.projectItemName(selectedProject?._id === p._id)}>{p.name}</div>
-                  <div style={s.projectItemSub}>{p.status}</div>
-                </div>
-              ))
-            )}
-          </div>
+            ))
+          )}
+        </div>
 
-          {/* Chat area */}
-          <div style={s.chatArea}>
-            {!selectedProject ? (
-              <EmptyState
-                icon="💬"
-                title="Select a conversation"
-                subtitle="Choose a project from the left to start chatting"
-              />
-            ) : (
-              <>
-                <div style={s.chatHeader}>
-                  <div style={s.chatHeaderDot}></div>
-                  <div style={s.chatHeaderTitle}>{selectedProject.name}</div>
-                  <div style={s.chatHeaderSub}>{messages.length} messages</div>
-                </div>
-
-                <div style={s.messages}>
-                  {loading ? (
-                    <div style={{ textAlign: "center", color: m.textMuted, fontSize: 13 }}>
-                      Loading messages...
-                    </div>
-                  ) : messages.length === 0 ? (
-                    <EmptyState
-                      icon="👋"
-                      title="No messages yet"
-                      subtitle="Be the first to say something!"
-                    />
-                  ) : (
-                    messages.map((msg, i) => (
-                      <div key={i} style={s.msgRow(isMe(msg))}>
-                        {!isMe(msg) && (
-                          <div style={s.msgAvatar}>
-                            {msg.senderName?.[0]?.toUpperCase()}
-                          </div>
-                        )}
-                        <div>
-                          {!isMe(msg) && <div style={s.msgName}>{msg.senderName}</div>}
-                          <div style={s.msgBubble(isMe(msg))}>
-                            {msg.text}
-                            <div style={s.msgTime}>{formatTime(msg.createdAt)}</div>
-                          </div>
+        <div style={s.chatArea}>
+          {!selectedProject ? (
+            <EmptyState
+              icon="💬"
+              title="Select a conversation"
+              subtitle="Choose a project from the left to start chatting"
+            />
+          ) : (
+            <>
+              <div style={s.chatHeader}>
+                <div style={s.chatHeaderDot}></div>
+                <div style={s.chatHeaderTitle}>{selectedProject.name}</div>
+                <div style={s.chatHeaderSub}>{messages.length} messages</div>
+              </div>
+              <div style={s.messages}>
+                {loading ? (
+                  <div style={{ textAlign: "center", color: m.textMuted, fontSize: 13 }}>
+                    Loading messages...
+                  </div>
+                ) : messages.length === 0 ? (
+                  <EmptyState icon="👋" title="No messages yet" subtitle="Be the first to say something!" />
+                ) : (
+                  messages.map((msg, i) => (
+                    <div key={i} style={s.msgRow(isMe(msg))}>
+                      {!isMe(msg) && (
+                        <div style={s.msgAvatar}>{msg.senderName?.[0]?.toUpperCase()}</div>
+                      )}
+                      <div>
+                        {!isMe(msg) && <div style={s.msgName}>{msg.senderName}</div>}
+                        <div style={s.msgBubble(isMe(msg))}>
+                          {msg.text}
+                          <div style={s.msgTime}>{formatTime(msg.createdAt)}</div>
                         </div>
                       </div>
-                    ))
-                  )}
-                  <div ref={bottomRef} />
-                </div>
-
-                <div style={s.inputArea}>
-                  <textarea
-                    style={s.input}
-                    placeholder="Type a message... (Enter to send)"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    onKeyDown={handleKey}
-                    onFocus={(e) => e.currentTarget.style.borderColor = a.color}
-                    onBlur={(e) => e.currentTarget.style.borderColor = m.cardBorder}
-                    rows={1}
-                  />
-                  <button
-                    style={s.sendBtn}
-                    onClick={sendMessage}
-                    onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
-                    onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
-                  >
-                    Send →
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
+                    </div>
+                  ))
+                )}
+                <div ref={bottomRef} />
+              </div>
+              <div style={s.inputArea}>
+                <textarea
+                  style={s.input}
+                  placeholder="Type a message... (Enter to send)"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  onKeyDown={handleKey}
+                  onFocus={(e) => e.currentTarget.style.borderColor = a.color}
+                  onBlur={(e) => e.currentTarget.style.borderColor = m.cardBorder}
+                  rows={1}
+                />
+                <button
+                  style={s.sendBtn}
+                  onClick={sendMessage}
+                  onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                  onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+                >
+                  Send →
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </Layout>

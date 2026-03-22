@@ -1,13 +1,13 @@
 import { create } from "zustand";
 
 const useAuthStore = create((set) => ({
-  user: JSON.parse(localStorage.getItem("user")) || null,
-  token: localStorage.getItem("token") || null,
-  accent: localStorage.getItem("accent") || "violet",
-  mode: localStorage.getItem("mode") || "night",
+  user:   JSON.parse(localStorage.getItem("user"))  || null,
+  token:  localStorage.getItem("token")             || null,
+  accent: localStorage.getItem("accent")            || "earthy",
+  mode:   localStorage.getItem("mode")              || "earthy",
 
   login: (userData) => {
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("user",  JSON.stringify(userData));
     localStorage.setItem("token", userData.token);
     set({ user: userData, token: userData.token });
   },

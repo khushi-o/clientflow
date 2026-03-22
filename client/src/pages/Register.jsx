@@ -3,6 +3,15 @@ import { useNavigate, Link } from "react-router-dom";
 import API from "../api/axios";
 import useAuthStore from "../store/authStore";
 
+const C = {
+  bg:        "#F9F7F2",
+  green:     "#1B4332",
+  terracotta:"#D08C60",
+  charcoal:  "#2D2D2D",
+  muted:     "#7A7670",
+  border:    "#E8E4DC",
+};
+
 const Register = () => {
   const { register, handleSubmit } = useForm();
   const navigate = useNavigate();
@@ -27,8 +36,12 @@ const Register = () => {
           <div style={s.brandName}>ClientFlow</div>
         </div>
         <div style={s.tagline}>
-          <div style={s.taglineTitle}>Start managing<br />your business today</div>
-          <div style={s.taglineSub}>Join thousands of freelancers and agencies who use ClientFlow to run their business.</div>
+          <div style={s.taglineTitle}>
+            Start managing<br />your business today
+          </div>
+          <div style={s.taglineSub}>
+            Join thousands of freelancers and agencies who use ClientFlow to run their business.
+          </div>
         </div>
         <div style={s.steps}>
           {[
@@ -59,8 +72,8 @@ const Register = () => {
                 type="text" required
                 placeholder="Khushi Kumari"
                 style={s.input}
-                onFocus={(e) => e.currentTarget.style.borderColor = "#818cf8"}
-                onBlur={(e) => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
+                onFocus={(e) => e.currentTarget.style.borderColor = C.green}
+                onBlur={(e) => e.currentTarget.style.borderColor = C.border}
               />
             </div>
             <div style={s.fieldGroup}>
@@ -70,8 +83,8 @@ const Register = () => {
                 type="email" required
                 placeholder="you@example.com"
                 style={s.input}
-                onFocus={(e) => e.currentTarget.style.borderColor = "#818cf8"}
-                onBlur={(e) => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
+                onFocus={(e) => e.currentTarget.style.borderColor = C.green}
+                onBlur={(e) => e.currentTarget.style.borderColor = C.border}
               />
             </div>
             <div style={s.fieldGroup}>
@@ -81,8 +94,8 @@ const Register = () => {
                 type="password" required
                 placeholder="••••••••"
                 style={s.input}
-                onFocus={(e) => e.currentTarget.style.borderColor = "#818cf8"}
-                onBlur={(e) => e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"}
+                onFocus={(e) => e.currentTarget.style.borderColor = C.green}
+                onBlur={(e) => e.currentTarget.style.borderColor = C.border}
               />
             </div>
             <div style={s.fieldGroup}>
@@ -99,11 +112,11 @@ const Register = () => {
               type="submit" style={s.btn}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-2px)";
-                e.currentTarget.style.boxShadow = "0 8px 24px rgba(129,140,248,0.5)";
+                e.currentTarget.style.boxShadow = `0 8px 24px ${C.green}50`;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 4px 16px rgba(129,140,248,0.4)";
+                e.currentTarget.style.boxShadow = `0 4px 16px ${C.green}30`;
               }}
             >
               Create Account →
@@ -123,86 +136,87 @@ const s = {
   page: {
     display: "flex", minHeight: "100vh",
     fontFamily: "'DM Sans', sans-serif",
-    background: "#080b14",
+    background: C.bg,
   },
   left: {
     flex: 1, padding: "60px 48px",
     display: "flex", flexDirection: "column",
     justifyContent: "space-between",
-    background: "linear-gradient(135deg, #0f0e1a 0%, #080b14 100%)",
-    borderRight: "1px solid rgba(255,255,255,0.06)",
+    background: C.green,
   },
   brand: { display: "flex", alignItems: "center", gap: 12 },
   brandLogo: {
     width: 40, height: 40, borderRadius: 10,
-    background: "linear-gradient(135deg, #818cf8, #6366f1)",
+    background: C.terracotta,
     display: "flex", alignItems: "center", justifyContent: "center",
     fontSize: 14, fontWeight: 800, color: "#fff",
-    boxShadow: "0 0 20px rgba(129,140,248,0.4)",
   },
   brandName: {
     fontFamily: "'Syne', sans-serif", fontSize: 20,
     fontWeight: 700, color: "#fff",
   },
-  tagline: { flex: 1, display: "flex", flexDirection: "column", justifyContent: "center" },
+  tagline: {
+    flex: 1, display: "flex", flexDirection: "column",
+    justifyContent: "center", padding: "40px 0",
+  },
   taglineTitle: {
     fontFamily: "'Syne', sans-serif", fontSize: 42,
     fontWeight: 700, color: "#fff", lineHeight: 1.2,
     marginBottom: 16, letterSpacing: "-1px",
   },
   taglineSub: {
-    fontSize: 16, color: "rgba(255,255,255,0.4)",
+    fontSize: 16, color: "rgba(255,255,255,0.6)",
     lineHeight: 1.6, maxWidth: 340,
   },
   steps: { display: "flex", flexDirection: "column", gap: 16 },
   step: { display: "flex", alignItems: "center", gap: 16 },
   stepNum: {
     width: 36, height: 36, borderRadius: 8,
-    background: "rgba(129,140,248,0.15)",
-    border: "1px solid rgba(129,140,248,0.3)",
+    background: "rgba(208,140,96,0.25)",
+    border: "1px solid rgba(208,140,96,0.4)",
     display: "flex", alignItems: "center", justifyContent: "center",
-    fontSize: 11, fontWeight: 700, color: "#818cf8", flexShrink: 0,
+    fontSize: 11, fontWeight: 700, color: C.terracotta, flexShrink: 0,
   },
-  stepText: { fontSize: 13, color: "rgba(255,255,255,0.5)" },
+  stepText: { fontSize: 13, color: "rgba(255,255,255,0.7)" },
   right: {
     width: 480, display: "flex", alignItems: "center",
     justifyContent: "center", padding: "40px 48px",
-    background: "#080b14",
+    background: C.bg,
   },
   card: { width: "100%", maxWidth: 380 },
   cardHeader: { marginBottom: 28 },
   title: {
     fontFamily: "'Syne', sans-serif", fontSize: 28,
-    fontWeight: 700, color: "#fff", marginBottom: 8,
+    fontWeight: 700, color: C.charcoal, marginBottom: 8,
   },
-  subtitle: { fontSize: 14, color: "rgba(255,255,255,0.4)" },
+  subtitle: { fontSize: 14, color: C.muted },
   form: { display: "flex", flexDirection: "column", gap: 14 },
   fieldGroup: { display: "flex", flexDirection: "column", gap: 6 },
   label: {
     fontSize: 12, fontWeight: 600,
-    color: "rgba(255,255,255,0.6)", letterSpacing: "0.3px",
+    color: C.charcoal, letterSpacing: "0.3px",
   },
   input: {
     padding: "12px 16px", borderRadius: 10,
-    border: "1px solid rgba(255,255,255,0.1)",
-    background: "rgba(255,255,255,0.05)",
-    color: "#fff", fontSize: 14, outline: "none",
+    border: `1px solid ${C.border}`,
+    background: "#fff",
+    color: C.charcoal, fontSize: 14, outline: "none",
     fontFamily: "'DM Sans', sans-serif",
     transition: "border-color 0.2s",
   },
   btn: {
     padding: "13px", borderRadius: 10, border: "none",
-    background: "linear-gradient(135deg, #818cf8, #6366f1)",
+    background: C.green,
     color: "#fff", fontSize: 15, fontWeight: 600,
     cursor: "pointer", marginTop: 6,
-    boxShadow: "0 4px 16px rgba(129,140,248,0.4)",
+    boxShadow: `0 4px 16px ${C.green}30`,
     transition: "all 0.2s",
   },
   footer: {
     marginTop: 24, textAlign: "center",
-    fontSize: 13, color: "rgba(255,255,255,0.4)",
+    fontSize: 13, color: C.muted,
   },
-  link: { color: "#818cf8", textDecoration: "none", fontWeight: 600 },
+  link: { color: C.terracotta, textDecoration: "none", fontWeight: 600 },
 };
 
 export default Register;
