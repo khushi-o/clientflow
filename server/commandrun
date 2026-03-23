@@ -8,3 +8,6 @@ npm run dev
 
 cd C:\Users\cushh\Documents\clientflow\client
 npm run dev
+
+
+mongodb+srv://cush2838_db_user:<db_password>@cluster0.8kmeowz.mongodb.net/?appName=Cluster0

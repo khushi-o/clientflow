@@ -1,4 +1,4 @@
-const key = (userId) => `clientflow-recent-${userId}`;
+const key = (userId) => `hestia-recent-${userId}`;
 const MAX = 8;
 
 export function pushRecent(userId, item) {

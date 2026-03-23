@@ -1,4 +1,4 @@
-# ClientFlow — System Architecture
+# Hestia — System Architecture
 
 **Version 1.1 · March 2026**
 
@@ -8,7 +8,7 @@ This document describes the current codebase: requirements-level behavior, struc
 
 ## 1. System Architecture Overview
 
-ClientFlow uses a **three-tier** pattern:
+Hestia uses a **three-tier** pattern:
 
 | Tier | Technology | Typical role |
 |------|------------|----------------|

@@ -55,10 +55,10 @@ const GlobalSearch = () => {
     };
     const onOpen = () => setOpen(true);
     window.addEventListener("keydown", onKey);
-    window.addEventListener("clientflow-open-search", onOpen);
+    window.addEventListener("hestia-open-search", onOpen);
     return () => {
       window.removeEventListener("keydown", onKey);
-      window.removeEventListener("clientflow-open-search", onOpen);
+      window.removeEventListener("hestia-open-search", onOpen);
     };
   }, []);
 

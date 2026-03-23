@@ -32,8 +32,8 @@ const Login = () => {
       {/* Left panel */}
       <div style={s.left}>
         <div style={s.brand}>
-          <div style={s.brandLogo}>CF</div>
-          <div style={s.brandName}>ClientFlow</div>
+          <div style={s.brandLogo}>H</div>
+          <div style={s.brandName}>Hestia</div>
         </div>
 
         <div style={s.tagline}>
@@ -64,7 +64,7 @@ const Login = () => {
         <div style={s.card}>
           <div style={s.cardHeader}>
             <div style={s.logoRow}>
-              <div style={s.logoBox}>CF</div>
+              <div style={s.logoBox}>H</div>
             </div>
             <div style={s.title}>Welcome back</div>
             <div style={s.subtitle}>Sign in to your workspace</div>

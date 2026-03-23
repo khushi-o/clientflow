@@ -32,15 +32,15 @@ const Register = () => {
       {/* Left panel */}
       <div style={s.left}>
         <div style={s.brand}>
-          <div style={s.brandLogo}>CF</div>
-          <div style={s.brandName}>ClientFlow</div>
+          <div style={s.brandLogo}>H</div>
+          <div style={s.brandName}>Hestia</div>
         </div>
         <div style={s.tagline}>
           <div style={s.taglineTitle}>
             Start managing<br />your business today
           </div>
           <div style={s.taglineSub}>
-            Join thousands of freelancers and agencies who use ClientFlow to run their business.
+            Join thousands of freelancers and agencies who use Hestia to run their business.
           </div>
         </div>
         <div style={s.steps}>

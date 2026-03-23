@@ -4,7 +4,7 @@ import API from "../api/axios";
 import useAuthStore from "../store/authStore";
 import { accents, modes } from "../theme";
 
-const STORAGE_KEY = "clientflow-sidebar-collapsed";
+const STORAGE_KEY = "hestia-sidebar-collapsed";
 const W_EXPANDED = 220;
 const W_COLLAPSED = 72;
 
@@ -274,7 +274,7 @@ const Sidebar = () => {
         <div
           title="Search"
           style={s.navItem(false)}
-          onClick={() => window.dispatchEvent(new Event("clientflow-open-search"))}
+          onClick={() => window.dispatchEvent(new Event("hestia-open-search"))}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = m.text;
             e.currentTarget.style.background = m.cardBorder;

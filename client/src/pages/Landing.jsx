@@ -358,8 +358,8 @@ const Landing = () => {
       {/* Nav */}
       <nav style={s.nav}>
         <div style={s.navLogo} onClick={() => navigate("/")}>
-          <div style={s.navLogoBox}>CF</div>
-          <span style={s.navLogoText}>ClientFlow</span>
+          <div style={s.navLogoBox}>H</div>
+          <span style={s.navLogoText}>Hestia</span>
         </div>
         <div style={s.navLinks}>
           <button style={s.navSignIn} onClick={() => navigate("/login")}>Sign In</button>
@@ -400,11 +400,11 @@ const Landing = () => {
               <div style={s.dot("#ff5f57")}></div>
               <div style={s.dot("#ffbd2e")}></div>
               <div style={s.dot("#28c840")}></div>
-              <div style={s.previewUrl}>clientflow.app/dashboard</div>
+              <div style={s.previewUrl}>hestia.app/dashboard</div>
             </div>
             <div style={s.previewBody}>
               <div style={s.previewSidebar}>
-                <div style={s.previewLogo}>ClientFlow</div>
+                <div style={s.previewLogo}>Hestia</div>
                 {navItems.map((item) => (
                   <div key={item} style={s.previewNavItem(activeNav === item)}>
                     {item}
@@ -483,7 +483,7 @@ const Landing = () => {
       <section style={s.cta}>
         <div id="cta" data-observe style={{ ...anim("cta") }}>
           <h2 style={s.ctaTitle}>Ready to streamline your workflow?</h2>
-          <p style={s.ctaSub}>Join thousands of freelancers and agencies who trust ClientFlow</p>
+          <p style={s.ctaSub}>Join thousands of freelancers and agencies who trust Hestia</p>
           <button className="cta-btn" style={s.ctaBtn} onClick={() => navigate("/register")}>
             Get Started Free →
           </button>
@@ -493,12 +493,12 @@ const Landing = () => {
       {/* Footer */}
       <footer style={s.footer}>
         <div style={s.footerLogo}>
-          <div style={s.footerLogoBox}>CF</div>
+          <div style={s.footerLogoBox}>H</div>
           <span style={{ fontFamily: "'Syne', sans-serif", fontSize: 15, fontWeight: 600, color: C.charcoal }}>
-            ClientFlow
+            Hestia
           </span>
         </div>
-        <span style={{ fontSize: 13, color: C.muted }}>© 2026 ClientFlow. All rights reserved.</span>
+        <span style={{ fontSize: 13, color: C.muted }}>© 2026 Hestia. All rights reserved.</span>
       </footer>
     </div>
   );
