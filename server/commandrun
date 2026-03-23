@@ -1,13 +1,11 @@
-$env:Path += ";C:\Users\cushh\mongodb\bin"
-mongod --dbpath C:\Users\cushh\mongodb\data\db
+# Local dev notes (do not put real passwords or Atlas URIs here — use server/.env only)
 
+# Example: ensure mongod is on PATH if using local MongoDB
+# $env:Path += ";C:\path\to\mongodb\bin"
+# mongod --dbpath C:\path\to\data\db
 
-cd C:\Users\cushh\Documents\clientflow\server
-npm run dev
+# From repo root:
+# cd server && npm run dev
+# cd client && npm run dev
 
-
-cd C:\Users\cushh\Documents\clientflow\client
-npm run dev
-
-
-mongodb+srv://cush2838_db_user:<db_password>@cluster0.8kmeowz.mongodb.net/?appName=Cluster0
+# MONGO_URI: copy from Atlas or set in server/.env (never commit .env)
